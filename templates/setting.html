@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}PharmaOne - Application Settings{% endblock %}
+
+{% block page_title %}Application Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <!-- Page Header Info -->
+    <div>
+        <h1 class="text-2xl font-bold text-text-main dark:text-white">Application Settings</h1>
+        <p class="text-text-secondary dark:text-gray-400 mt-1">Manage your profile, general preferences,
+            and notifications.</p>
+    </div>
+    <!-- Tabs Navigation -->
+    <!-- Tabs Navigation -->
+    <div class="border-b border-border-light dark:border-gray-700">
+        <nav aria-label="Tabs" class="-mb-px flex space-x-8">
+            <button onclick="switchTab('profile', this)" id="tab-profile"
+                class="tab-btn border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-size: 20px;">person</span>
+                User Profile
+            </button>
+            <button onclick="switchTab('general', this)" id="tab-general"
+                class="tab-btn border-transparent text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-gray-200 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-size: 20px;">tune</span>
+                General Settings
+            </button>
+            <button onclick="switchTab('notifications', this)" id="tab-notifications"
+                class="tab-btn border-transparent text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-gray-200 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-size: 20px;">notifications_active</span>
+                Notification Preferences
+            </button>
+
+        </nav>
+    </div>
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <!-- Left Column (Profile Summary) -->
+        <div class="lg:col-span-1 space-y-6">
+            <div
+                class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-border-light dark:border-gray-800 p-6">
+                <div class="flex flex-col items-center text-center">
+                    <div class="relative group cursor-pointer">
+                        <div
+                            class="size-32 rounded-full overflow-hidden border-4 border-background-light dark:border-gray-700 mb-4 bg-gray-200">
+                            <img alt="Profile Picture" class="w-full h-full object-cover"
+                                src="{% if current_user.profile_picture %}{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}{% else %}https://ui-avatars.com/api/?name={{ current_user.first_name or current_user.username }}+{{ current_user.last_name or '' }}&background=137fec&color=fff&size=128{% endif %}" />
+                        </div>
+                    </div>
+                    <h2 class="text-xl font-bold text-text-main dark:text-white">{{ current_user.first_name or
+                        current_user.username }} {{ current_user.last_name or '' }}</h2>
+                    <p class="text-sm text-text-secondary dark:text-gray-400 mb-4">{{ current_user.role }}</p>
+                    <div class="w-full flex justify-center">
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                            Active Account
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-border-light dark:border-gray-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-text-secondary dark:text-gray-400">Username</span>
+                        <span class="text-sm font-medium text-text-main dark:text-white">{{ current_user.username
+                            }}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-text-secondary dark:text-gray-400">Join Date</span>
+                        <span class="text-sm font-medium text-text-main dark:text-white">Jan 2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Right Column (Forms) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- User Profile Section -->
+            <section id="section-profile" class="tab-section">
+                <form action="{{ url_for('setting') }}" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="form_type" value="profile">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-border-light dark:border-gray-800">
+                        <div class="px-6 py-4 border-b border-border-light dark:border-gray-800">
+                            <h3 class="text-lg font-semibold text-text-main dark:text-white">Personal Information</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="col-span-1">
+                                <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">First
+                                    Name</label>
+                                <input name="first_name" type="text" value="{{ current_user.first_name or '' }}"
+                                    class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm" />
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Last
+                                    Name</label>
+                                <input name="last_name" type="text" value="{{ current_user.last_name or '' }}"
+                                    class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm" />
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Email
+                                    Address</label>
+                                <input name="email" type="email" value="{{ current_user.email or '' }}"
+                                    class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm" />
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Change
+                                    Profile Picture</label>
+                                <input name="profile_picture" type="file"
+                                    class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary dark:file:bg-blue-900/20 hover:file:bg-blue-100 transition-all cursor-pointer" />
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end">
+                            <button type="submit"
+                                class="bg-primary hover:bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95">
+                                Save Profile
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- General Settings Section -->
+            <section id="section-general" class="tab-section hidden">
+                <form action="{{ url_for('setting') }}" method="POST">
+                    <input type="hidden" name="form_type" value="general">
+                    <input type="hidden" name="theme" id="input-theme" value="{{ app_settings.theme }}">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-border-light dark:border-gray-800">
+                        <div class="px-6 py-4 border-b border-border-light dark:border-gray-800">
+                            <h3 class="text-lg font-semibold text-text-main dark:text-white">General Preferences</h3>
+                        </div>
+                        <div class="p-6 space-y-8">
+                            <!-- Language Row -->
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="max-w-md">
+                                    <label
+                                        class="block text-sm font-semibold text-text-main dark:text-gray-200">Language</label>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400 mt-1">Select your preferred
+                                        language for the interface.</p>
+                                </div>
+                                <div class="w-full md:max-w-xs">
+                                    <select name="language"
+                                        class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3">
+                                        <option value="en-US" {% if app_settings.language=='en-US' %}selected{% endif
+                                            %}>English (US)</option>
+                                        <option value="fr-FR" {% if app_settings.language=='fr-FR' %}selected{% endif
+                                            %}>French</option>
+                                        <option value="es-ES" {% if app_settings.language=='es-ES' %}selected{% endif
+                                            %}>Spanish</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-border-light dark:border-gray-800 pt-8"></div>
+
+                            <!-- Appearance Row -->
+                            <div class="flex flex-col md:flex-row justify-between gap-4">
+                                <div class="max-w-md">
+                                    <label
+                                        class="block text-sm font-semibold text-text-main dark:text-gray-200">Appearance</label>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400 mt-1">Customize how the
+                                        application looks on your device.</p>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 w-full md:max-w-lg">
+                                    <!-- Light Card -->
+                                    <button type="button" onclick="setTheme('light')"
+                                        class="theme-card flex flex-col border-2 rounded-xl overflow-hidden transition-all {% if app_settings.theme == 'light' %}border-primary ring-2 ring-primary/20 bg-primary/5{% else %}border-border-light dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600{% endif %}"
+                                        id="theme-light">
+                                        <div class="h-24 bg-white p-2">
+                                            <div class="w-full h-full border border-gray-100 rounded-md shadow-sm">
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="py-2 text-center text-xs font-medium text-text-main dark:text-white border-t border-inherit">
+                                            Light</div>
+                                    </button>
+                                    <!-- Dark Card -->
+                                    <button type="button" onclick="setTheme('dark')"
+                                        class="theme-card flex flex-col border-2 rounded-xl overflow-hidden transition-all {% if app_settings.theme == 'dark' %}border-primary ring-2 ring-primary/20 bg-primary/5{% else %}border-border-light dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600{% endif %}"
+                                        id="theme-dark">
+                                        <div class="h-24 bg-slate-900 p-2">
+                                            <div class="w-full h-full border border-slate-700 rounded-md shadow-sm">
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="py-2 text-center text-xs font-medium text-text-main dark:text-white border-t border-inherit">
+                                            Dark</div>
+                                    </button>
+                                    <!-- System Card -->
+                                    <button type="button" onclick="setTheme('system')"
+                                        class="theme-card flex flex-col border-2 rounded-xl overflow-hidden transition-all {% if app_settings.theme == 'system' %}border-primary ring-2 ring-primary/20 bg-primary/5{% else %}border-border-light dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600{% endif %}"
+                                        id="theme-system">
+                                        <div class="h-24 flex">
+                                            <div class="w-1/2 bg-white p-2">
+                                                <div class="w-full h-full border border-gray-100 rounded-md shadow-sm">
+                                                </div>
+                                            </div>
+                                            <div class="w-1/2 bg-slate-900 p-2">
+                                                <div class="w-full h-full border border-slate-700 rounded-md shadow-sm">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="py-2 text-center text-xs font-medium text-text-main dark:text-white border-t border-inherit">
+                                            System</div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-border-light dark:border-gray-800 pt-8"></div>
+
+                            <!-- Date & Time Row -->
+                            <div class="flex flex-col md:flex-row justify-between gap-4">
+                                <div class="max-w-md">
+                                    <label class="block text-sm font-semibold text-text-main dark:text-gray-200">Date &
+                                        Time</label>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400 mt-1">Choose how dates and
+                                        times are displayed.</p>
+                                </div>
+                                <div class="w-full md:max-w-xs space-y-4">
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Date
+                                            Format</label>
+                                        <select name="date_format"
+                                            class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3">
+                                            <option value="MM/DD/YYYY" {% if app_settings.date_format=='MM/DD/YYYY'
+                                                %}selected{% endif %}>MM/DD/YYYY (12/31/2023)</option>
+                                            <option value="DD/MM/YYYY" {% if app_settings.date_format=='DD/MM/YYYY'
+                                                %}selected{% endif %}>DD/MM/YYYY (31/12/2023)</option>
+                                            <option value="YYYY-MM-DD" {% if app_settings.date_format=='YYYY-MM-DD'
+                                                %}selected{% endif %}>YYYY-MM-DD (2023-12-31)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Time
+                                            Format</label>
+                                        <select name="time_format"
+                                            class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3">
+                                            <option value="12 Hour" {% if app_settings.time_format=='12 Hour'
+                                                %}selected{% endif %}>12 Hour (02:30 PM)</option>
+                                            <option value="24 Hour" {% if app_settings.time_format=='24 Hour'
+                                                %}selected{% endif %}>24 Hour (14:30)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-border-light dark:border-gray-800 pt-8"></div>
+
+                            <!-- Regional Settings Row -->
+                            <div class="flex flex-col md:flex-row justify-between gap-4">
+                                <div class="max-w-md">
+                                    <label
+                                        class="block text-sm font-semibold text-text-main dark:text-gray-200">Regional
+                                        Settings</label>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400 mt-1">Set your local
+                                        currency and time zone.</p>
+                                </div>
+                                <div class="w-full md:max-w-xs space-y-4">
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Currency</label>
+                                        <select name="currency"
+                                            class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3">
+                                            <option value="USD" {% if app_settings.currency=='USD' %}selected{% endif
+                                                %}>USD ($)</option>
+                                            <option value="EUR" {% if app_settings.currency=='EUR' %}selected{% endif
+                                                %}>EUR (€)</option>
+                                            <option value="GBP" {% if app_settings.currency=='GBP' %}selected{% endif
+                                                %}>GBP (£)</option>
+                                            <option value="INR" {% if app_settings.currency=='INR' %}selected{% endif
+                                                %}>INR (Rs)</option>
+                                            <option value="CAD" {% if app_settings.currency=='CAD' %}selected{% endif
+                                                %}>CAD (C$)</option>
+                                            <option value="AUD" {% if app_settings.currency=='AUD' %}selected{% endif
+                                                %}>AUD (A$)</option>
+                                            <option value="JPY" {% if app_settings.currency=='JPY' %}selected{% endif
+                                                %}>JPY (¥)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Country</label>
+                                        <select name="country"
+                                            class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3">
+                                            <option value="United States" {% if app_settings.country=='United States'
+                                                %}selected{% endif %}>United States</option>
+                                            <option value="India" {% if app_settings.country=='India' %}selected{% endif
+                                                %}>India</option>
+                                            <option value="United Kingdom" {% if app_settings.country=='United Kingdom'
+                                                %}selected{% endif %}>United Kingdom</option>
+                                            <option value="Canada" {% if app_settings.country=='Canada' %}selected{%
+                                                endif %}>Canada</option>
+                                            <option value="Australia" {% if app_settings.country=='Australia'
+                                                %}selected{% endif %}>Australia</option>
+                                            <option value="France" {% if app_settings.country=='France' %}selected{%
+                                                endif %}>France</option>
+                                            <option value="Germany" {% if app_settings.country=='Germany' %}selected{%
+                                                endif %}>Germany</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">Time
+                                            Zone</label>
+                                        <select name="timezone"
+                                            class="block w-full rounded-lg border-border-light dark:border-gray-700 bg-background-light dark:bg-gray-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3">
+                                            <option value="UTC" {% if app_settings.timezone=='UTC' %}selected{% endif
+                                                %}>UTC (Universal Time)</option>
+                                            <option value="GMT" {% if app_settings.timezone=='GMT' %}selected{% endif
+                                                %}>GMT (Greenwich Mean Time)</option>
+                                            <option value="EST" {% if app_settings.timezone=='EST' %}selected{% endif
+                                                %}>EST (Eastern Standard Time)</option>
+                                            <option value="IST" {% if app_settings.timezone=='IST' %}selected{% endif
+                                                %}>IST (India Standard Time)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end">
+                            <button type="submit"
+                                class="bg-primary hover:bg-blue-600 text-white px-8 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95">
+                                Save General Preferences
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Notification Preferences Section -->
+            <section id="section-notifications" class="tab-section hidden">
+                <form action="{{ url_for('setting') }}" method="POST">
+                    <input type="hidden" name="form_type" value="notifications">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-border-light dark:border-gray-800">
+                        <div class="px-6 py-4 border-b border-border-light dark:border-gray-800">
+                            <h3 class="text-lg font-semibold text-text-main dark:text-white">Notification Preferences
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <!-- Toggle 1 -->
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-text-main dark:text-white">Low Stock Alerts</p>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400">Receive alerts when
+                                        inventory levels fall below threshold.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="low_stock" class="sr-only peer" {% if
+                                        app_settings.low_stock_threshold_alert %}checked{% endif %}>
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                </label>
+                            </div>
+                            <!-- Toggle 2 -->
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-text-main dark:text-white">Medicine Expiry
+                                        Notifications</p>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400">Get notified when products
+                                        are nearing their expiration date.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="expiry" class="sr-only peer" {% if
+                                        app_settings.expiry_alert %}checked{% endif %}>
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                </label>
+                            </div>
+                            <!-- Toggle 3 -->
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-text-main dark:text-white">New Sale Alerts</p>
+                                    <p class="text-xs text-text-secondary dark:text-gray-400">Notification for every
+                                        successful sale processed.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="new_sale" class="sr-only peer" {% if
+                                        app_settings.new_sale_alert %}checked{% endif %}>
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end">
+                            <button type="submit"
+                                class="bg-primary hover:bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95">
+                                Update Preferences
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId, btn) {
+        // Update Sections
+        document.querySelectorAll('.tab-section').forEach(section => {
+            section.classList.add('hidden');
+        });
+        document.getElementById('section-' + tabId).classList.remove('hidden');
+
+        // Update Buttons
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.classList.remove('border-primary', 'text-primary');
+            button.classList.add('border-transparent', 'text-text-secondary', 'dark:text-gray-400');
+        });
+        btn.classList.add('border-primary', 'text-primary');
+        btn.classList.remove('border-transparent', 'text-text-secondary', 'dark:text-gray-400');
+    }
+
+    function setTheme(theme) {
+        // Update Hidden Input
+        document.getElementById('input-theme').value = theme;
+
+        // Update Visuals
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.classList.remove('border-primary', 'ring-2', 'ring-primary/20', 'bg-primary/5');
+            card.classList.add('border-border-light', 'dark:border-gray-700', 'hover:border-gray-300', 'dark:hover:border-gray-600');
+        });
+
+        const selectedCard = document.getElementById('theme-' + theme);
+        selectedCard.classList.add('border-primary', 'ring-2', 'ring-primary/20', 'bg-primary/5');
+        selectedCard.classList.remove('border-border-light', 'dark:border-gray-700', 'hover:border-gray-300', 'dark:hover:border-gray-600');
+    }
+</script>
+{% endblock %}

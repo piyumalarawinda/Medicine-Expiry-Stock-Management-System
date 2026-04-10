@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge Base - PharmaOne{% endblock %}
+
+{% block page_title %}Knowledge Base{% endblock %}
+
+{% block header_title %}Knowledge Base{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
+    <!-- Header Section -->
+    <div
+        class="bg-gradient-to-br from-primary to-blue-600 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-primary/20">
+        <div class="relative z-10 max-w-2xl">
+            <h1 class="text-3xl md:text-5xl font-black mb-4">Master PharmaOne</h1>
+            <p class="text-blue-100 text-lg md:text-xl font-medium opacity-90">Everything you need to know about
+                managing your pharmacy efficiently. Comprehensive guides, documentation, and best practices.</p>
+        </div>
+        <span
+            class="material-symbols-outlined absolute -right-8 -bottom-8 text-[240px] opacity-10 rotate-12 select-none">menu_book</span>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% set categories = [
+        ('rocket_launch', 'Getting Started', 'Learn the basics of setting up your pharmacy and users.', 'blue'),
+        ('inventory_2', 'Inventory Management', 'How to manage medicines, batches, and suppliers.', 'emerald'),
+        ('payments', 'Sales & Invoicing', 'Guide to processing transactions and generating invoices.', 'orange'),
+        ('bar_chart', 'Reports & Analytics', 'Understanding your business performance and data.', 'purple')
+        ] %}
+        {% for icon, title, desc, color in categories %}
+        <div
+            class="bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 hover:border-primary/50 transition-all cursor-pointer group hover:shadow-xl hover:-translate-y-1">
+            <div
+                class="size-12 rounded-xl bg-{{ color }}-500/10 flex items-center justify-center text-{{ color }}-500 mb-4 group-hover:bg-{{ color }}-500 group-hover:text-white transition-colors">
+                <span class="material-symbols-outlined">{{ icon }}</span>
+            </div>
+            <h3 class="font-bold text-text-main dark:text-white mb-2">{{ title }}</h3>
+            <p class="text-text-muted text-xs leading-relaxed">{{ desc }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Featured Articles -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <h2 class="text-xl font-black text-text-main dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">article</span>
+                Featured Guides
+            </h2>
+            <div class="space-y-4">
+                {% set articles = [
+                ('Setting up your first Supplier', '3 min read', 'Learn how to properly enter supplier information and
+                link them to your medicine stock.'),
+                ('Managing Low Stock Alerts', '5 min read', 'Customize your alert thresholds and never run out of
+                critical medication again.'),
+                ('Exporting Monthly Sales Reports', '4 min read', 'How to generate and analyze your monthly financial
+                performance data.'),
+                ('Adding Medicine Batches & Expiry', '6 min read', 'Detailed guide on tracking batch numbers and
+                managing expiry dates effectively.')
+                ] %}
+                {% for title, time, excerpt in articles %}
+                <div
+                    class="bg-white dark:bg-card-dark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 hover:border-primary/30 transition-all cursor-pointer group">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-bold text-primary uppercase tracking-widest">{{ time }}</span>
+                        <span
+                            class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                    </div>
+                    <h4 class="font-bold text-text-main dark:text-white group-hover:text-primary transition-colors">{{
+                        title }}</h4>
+                    <p class="text-text-muted text-sm mt-1">{{ excerpt }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="space-y-6">
+            <div class="bg-slate-900 rounded-2xl p-6 text-white overflow-hidden relative">
+                <div class="relative z-10">
+                    <h3 class="font-bold text-lg mb-2">Detailed Documentation</h3>
+                    <p class="text-slate-400 text-sm mb-6">Need more technical details? Download our complete PDF
+                        manual.</p>
+                    <button
+                        class="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined text-sm">download</span>
+                        Download PDF
+                    </button>
+                </div>
+                <span
+                    class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10">description</span>
+            </div>
+
+            <div
+                class="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-slate-200/60 dark:border-slate-800/60">
+                <h3 class="font-bold text-text-main dark:text-white mb-4">Latest Updates</h3>
+                <div class="space-y-4">
+                    <div class="flex gap-4">
+                        <div class="size-2 bg-primary rounded-full mt-1.5 shrink-0"></div>
+                        <div>
+                            <p class="text-sm font-bold text-text-main dark:text-white leading-tight">New Batch
+                                Management v2.1</p>
+                            <p class="text-[10px] text-text-muted">Jan 28, 2026</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="size-2 bg-emerald-500 rounded-full mt-1.5 shrink-0"></div>
+                        <div>
+                            <p class="text-sm font-bold text-text-main dark:text-white leading-tight">Improved SVG
+                                Export Logic</p>
+                            <p class="text-[10px] text-text-muted">Jan 25, 2026</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - PharmaOne{% endblock %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <div class="flex flex-wrap gap-3 items-center justify-between">
+        <div>
+            <h3 class="text-xl font-bold text-text-main dark:text-white">Welcome, {{ current_user.username }}! 👋</h3>
+            <p class="text-text-muted text-sm">Here's what's happening with your pharmacy today.</p>
+        </div>
+        <div class="flex gap-3">
+            {% if (notification_count > 0) %}
+            <a href="{{ url_for('mark_all_notifications_read') }}"
+                class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">done_all</span>
+                Mark all as read
+            </a>
+            {% endif %}
+            <a href="{{ url_for('add_medicine') }}"
+                class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-text-main dark:white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">add_box</span>
+                Add Medicine
+            </a>
+            <a href="{{ url_for('sale') }}"
+                class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-primary/30">
+                <span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+                New Sale
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- Total Products -->
+        <a href="{{ url_for('medicine') }}"
+            class="bg-card-light dark:bg-card-dark p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-primary transition-all">
+            <div class="absolute right-0 top-0 h-full w-1 bg-primary"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-wider mb-1">Total Medicines</p>
+                    <h3 class="text-2xl font-black text-text-main dark:text-white">{{ medicines|length if medicines else
+                        0 }}</h3>
+                </div>
+                <div class="p-2 bg-primary/10 rounded-lg text-primary">
+                    <span class="material-symbols-outlined">medication_liquid</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-[10px] font-bold text-text-muted uppercase tracking-tight">
+                Inventory items
+            </div>
+        </a>
+
+        <!-- Expiring Soon -->
+        <a href="{{ url_for('notifications', filter='Expiring Soon') }}"
+            class="bg-card-light dark:bg-card-dark p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-orange-500 transition-all">
+            <div class="absolute right-0 top-0 h-full w-1 bg-orange-500"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-wider mb-1">Near Expiry</p>
+                    <h3 class="text-2xl font-black text-text-main dark:text-white">{{ near_expiry|length if near_expiry
+                        else 0 }}</h3>
+                </div>
+                <div class="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+                    <span class="material-symbols-outlined">history_toggle_off</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-[10px] font-bold">
+                <span
+                    class="text-orange-600 dark:text-orange-400 flex items-center bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 rounded">
+                    Action Needed
+                </span>
+            </div>
+        </a>
+
+        <!-- Low Stock -->
+        <a href="{{ url_for('notifications', filter='Low Stock') }}"
+            class="bg-card-light dark:bg-card-dark p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-yellow-500 transition-all">
+            <div class="absolute right-0 top-0 h-full w-1 bg-yellow-500"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-wider mb-1">Low Stock</p>
+                    <h3 class="text-2xl font-black text-text-main dark:text-white">{{ low_stock|length if low_stock else
+                        0 }}</h3>
+                </div>
+                <div class="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-600 dark:text-yellow-400">
+                    <span class="material-symbols-outlined">inventory</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-[10px] font-bold">
+                <span
+                    class="text-red-600 dark:text-red-400 flex items-center bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded">
+                    Restock Alert
+                </span>
+            </div>
+        </a>
+
+        <!-- Expired -->
+        <a href="{{ url_for('notifications', filter='Expiring Soon') }}"
+            class="bg-card-light dark:bg-card-dark p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-red-600 transition-all">
+            <div class="absolute right-0 top-0 h-full w-1 bg-red-600"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-wider mb-1">Expired</p>
+                    <h3 class="text-2xl font-black text-text-main dark:text-white">{{ expired|length if expired else 0
+                        }}</h3>
+                </div>
+                <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400">
+                    <span class="material-symbols-outlined">block</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-[10px] font-bold text-text-muted uppercase tracking-tight">
+                Remove Items
+            </div>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+        <!-- Stock Distribution Chart -->
+        <div
+            class="bg-card-light dark:bg-card-dark p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                <div>
+                    <h3 class="font-bold text-xl text-text-main dark:text-white">Stock Distribution</h3>
+                    <p class="text-xs text-text-muted font-bold tracking-widest mt-1">Comprehensive Inventory Health
+                        Overview</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-4 justify-center">
+                    <div class="flex items-center gap-1.5">
+                        <span class="size-3 rounded-full bg-emerald-500"></span>
+                        <span class="text-xs font-black text-text-muted uppercase">Healthy</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="size-3 rounded-full bg-amber-500"></span>
+                        <span class="text-xs font-black text-text-muted uppercase">Low Stock</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="size-3 rounded-full bg-orange-500"></span>
+                        <span class="text-xs font-black text-text-muted uppercase">Near Expiry</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="size-3 rounded-full bg-rose-500"></span>
+                        <span class="text-xs font-black text-text-muted uppercase">Expired</span>
+                    </div>
+                </div>
+            </div>
+            <div class="h-[400px] relative flex justify-center">
+                <canvas id="stockStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div
+        class="bg-card-light dark:bg-card-dark rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+        <div class="flex items-center justify-between p-6 pb-2">
+            <h3 class="font-bold text-text-main dark:text-white">Recent Inventory Movement</h3>
+            <a class="text-primary text-sm font-bold hover:underline" href="{{ url_for('stock_movement') }}">View
+                All</a>
+        </div>
+        <div class="overflow-x-auto flex-1 p-2">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-xs text-text-muted uppercase border-b border-slate-100 dark:border-slate-700/50">
+                        <th class="px-4 py-3 font-semibold">Medicine</th>
+                        <th class="px-4 py-3 font-semibold">Activity</th>
+                        <th class="px-4 py-3 font-semibold">Date</th>
+                        <th class="px-4 py-3 font-semibold text-right">Qty</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% for log in recent_logs %}
+                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-4 py-3">
+                            <p class="font-medium text-text-main dark:text-white">{{ log.medicine.name }}</p>
+                        </td>
+                        <td class="px-4 py-3 text-text-muted text-xs">{{ log.reason|capitalize }}</td>
+                        <td class="px-4 py-3 text-text-muted text-xs">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <span
+                                class="font-bold {% if log.change_quantity > 0 %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                                {{ "+" if log.change_quantity > 0 else "" }}{{ log.change_quantity }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-text-muted italic">No recent activity</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const isDark = document.documentElement.classList.contains('dark');
+
+    // Stock Distribution Chart (Doughnut)
+    const stockCtx = document.getElementById('stockStatusChart').getContext('2d');
+
+    // Data from Backend
+    const distData = {{ dist_counts | tojson }};
+    const totalItems = {{ medicines| length if medicines else 0 }};
+
+    new Chart(stockCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Healthy', 'Low Stock', 'Near Expiry', 'Expired'],
+            datasets: [{
+                data: [
+                    distData.healthy,
+                    distData.low_stock,
+                    distData.near_expiry,
+                    distData.expired
+                ],
+                backgroundColor: [
+                    '#10b981', // Emerald
+                    '#f59e0b', // Amber
+                    '#f97316', // Orange
+                    '#ef4444'  // Rose
+                ],
+                borderWidth: isDark ? 4 : 2,
+                borderColor: isDark ? '#0f172a' : '#ffffff',
+                hoverOffset: 15,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                    titleColor: isDark ? '#f8fafc' : '#1e293b',
+                    bodyColor: isDark ? '#94a3b8' : '#64748b',
+                    borderColor: isDark ? '#334155' : '#e2e8f0',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        label: function (context) {
+                            const value = context.parsed || 0;
+                            const percentage = totalItems > 0 ? ((value / totalItems) * 100).toFixed(1) : 0;
+                            return ` ${context.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

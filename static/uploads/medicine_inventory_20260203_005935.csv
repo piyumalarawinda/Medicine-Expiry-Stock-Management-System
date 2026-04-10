@@ -1,0 +1,98 @@
+ID,Name,Category,Stock,Unit Price,Expiry Date
+1,Amoxicillin 500mg,Antibiotics,27,$15.50,2026-06-09
+2,Paracetamol 500mg,Painkillers,168,$5.25,2026-05-09
+3,Vitamin C 1000mg,Vitamins,162,$12.00,2026-01-23
+5,Lisinopril 10mg,Cardiology,58,$18.90,2026-08-01
+6,Metformin 850mg,Diabetes,97,$10.15,2027-01-21
+7,Hydrocortisone Cream,Dermatology,32,$8.75,2026-06-30
+8,Ibuprofen 400mg,Painkillers,97,$7.50,2026-02-22
+9,Multivitamin Complex,Vitamins,129,$22.30,2026-11-26
+10,Azithromycin 250mg,Antibiotics,72,$30.00,2026-07-26
+11,Paracetamol 650mg,Analgesic,5,$0.00,2026-02-12
+12,Benadryl Syrup,Antihistamine,50,$0.00,2026-01-23
+13,Insulin Glargine,Antidiabetic,12,$0.00,2026-03-14
+14,zim,Cardiovascular,953,$0.00,2026-01-30
+15,Paracetamol,Analgesic,98,$0.00,2027-10-15
+16,Ibuprofen,Analgesic,98,$0.00,2027-11-20
+17,Aspirin,Analgesic,153,$0.00,2027-05-31
+18,Amoxicillin,Antibiotic,168,$0.00,2027-04-17
+19,Azithromycin,Antibiotic,151,$0.00,2027-07-26
+20,Ciprofloxacin,Antibiotic,120,$0.00,2027-02-21
+21,Metformin,Antidiabetic,63,$0.00,2027-04-26
+22,Atorvastatin,Cardiovascular,191,$0.00,2027-12-23
+23,Simvastatin,Cardiovascular,78,$0.00,2027-12-20
+24,Omeprazole,Gastrointestinal,68,$0.00,2027-02-09
+25,Pantoprazole,Gastrointestinal,173,$0.00,2027-05-04
+26,Ranitidine,Gastrointestinal,142,$0.00,2028-01-24
+27,Losartan,Cardiovascular,75,$0.00,2027-02-18
+28,Amlodipine,Cardiovascular,51,$0.00,2027-09-20
+29,Enalapril,Cardiovascular,62,$0.00,2027-12-24
+30,Lisinopril,Cardiovascular,101,$0.00,2027-02-18
+31,Hydrochlorothiazide,Cardiovascular,114,$0.00,2027-07-07
+32,Furosemide,Cardiovascular,85,$0.00,2027-11-11
+33,Spironolactone,Cardiovascular,132,$0.00,2027-06-15
+34,Insulin,Antidiabetic,103,$0.00,2027-07-08
+35,Glimepiride,Antidiabetic,187,$0.00,2028-01-16
+36,Gliclazide,Antidiabetic,53,$0.00,2027-07-04
+37,Salbutamol,Respiratory,107,$0.00,2027-06-24
+38,Budesonide,Respiratory,107,$0.00,2027-05-27
+39,Prednisolone,Steroids,88,$0.00,2027-10-12
+40,Dexamethasone,Steroids,190,$0.00,2028-01-25
+41,Cetirizine,Antihistamine,158,$0.00,2027-08-16
+42,Loratadine,Antihistamine,162,$0.00,2027-03-23
+43,Chlorpheniramine,Antihistamine,107,$0.00,2027-04-11
+44,Diazepam,Psychiatric,53,$0.00,2027-03-10
+45,Alprazolam,Psychiatric,58,$0.00,2027-04-02
+46,Clonazepam,Psychiatric,198,$0.00,2027-02-03
+47,Sertraline,Psychiatric,59,$0.00,2027-04-27
+48,Fluoxetine,Psychiatric,60,$0.00,2027-07-22
+49,Amitriptyline,Psychiatric,116,$0.00,2027-12-08
+50,Tramadol,Analgesic,133,$0.00,2027-06-04
+51,Morphine,Analgesic,106,$0.00,2027-12-22
+52,Codeine,Analgesic,140,$0.00,2027-12-29
+53,Diclofenac,Analgesic,196,$0.00,2027-10-07
+54,Naproxen,Analgesic,81,$0.00,2027-03-17
+55,Ketorolac,Analgesic,76,$0.00,2027-02-26
+56,Vitamin C,Vitamins,107,$0.00,2027-10-18
+57,Vitamin D3,Vitamins,81,$0.00,2027-09-13
+58,Vitamin B12,Vitamins,68,$0.00,2027-03-21
+59,Folic Acid,Vitamins,126,$0.00,2027-08-27
+60,Iron Sulfate,Vitamins,71,$0.00,2027-02-18
+61,Calcium Carbonate,Vitamins,92,$0.00,2027-11-18
+62,Zinc Sulfate,Vitamins,190,$0.00,2027-02-01
+63,Magnesium Hydroxide,Gastrointestinal,198,$0.00,2027-07-16
+64,ORS,Vitamins,130,$0.00,2027-03-03
+65,Domperidone,Gastrointestinal,93,$0.00,2027-10-24
+66,Metoclopramide,Gastrointestinal,144,$0.00,2027-12-17
+67,Ondansetron,Gastrointestinal,97,$0.00,2027-04-20
+68,Loperamide,Gastrointestinal,110,$0.00,2027-03-28
+69,Albendazole,Anthelmintic,60,$0.00,2027-06-14
+70,Mebendazole,Anthelmintic,50,$0.00,2027-03-06
+71,Ivermectin,Anthelmintic,189,$0.00,2027-07-08
+72,Chloroquine,Antimalarial,77,$0.00,2027-05-08
+73,Hydroxychloroquine,Antimalarial,77,$0.00,2027-12-01
+74,Doxycycline,Antibiotic,124,$0.00,2027-10-09
+75,Clindamycin,Antibiotic,62,$0.00,2027-09-06
+76,Cefixime,Antibiotic,57,$0.00,2027-02-07
+77,Ceftriaxone,Antibiotic,78,$0.00,2027-11-09
+78,Gentamicin,Antibiotic,61,$0.00,2027-09-08
+79,Vancomycin,Antibiotic,122,$0.00,2027-10-24
+80,Linezolid,Antibiotic,123,$0.00,2027-12-03
+81,Fluconazole,Antifungal,78,$0.00,2027-02-06
+82,Ketoconazole,Antifungal,200,$0.00,2027-02-20
+83,Acyclovir,Antiviral,179,$0.00,2027-07-05
+84,Valacyclovir,Antiviral,187,$0.00,2028-01-22
+85,Oseltamivir,Antiviral,187,$0.00,2027-02-06
+86,Heparin,Cardiovascular,86,$0.00,2027-08-30
+87,Warfarin,Cardiovascular,198,$0.00,2027-03-01
+88,Aspirin (Low dose),Cardiovascular,193,$0.00,2027-09-13
+89,Clopidogrel,Cardiovascular,63,$0.00,2027-03-27
+90,Digoxin,Cardiovascular,92,$0.00,2027-08-08
+91,Propranolol,Cardiovascular,115,$0.00,2027-05-24
+92,Metoprolol,Cardiovascular,148,$0.00,2027-09-07
+93,Carvedilol,Cardiovascular,79,$0.00,2027-09-06
+94,Isosorbide Dinitrate,Cardiovascular,182,$0.00,2027-06-19
+95,Nitroglycerin,Cardiovascular,179,$0.00,2027-03-17
+96,Levodopa,Psychiatric,109,$0.00,2027-11-13
+97,Carbamazepine,Psychiatric,51,$0.00,2027-04-08
+98,Phenytoin,Psychiatric,76,$0.00,2027-08-20

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Alerts - PharmaOne{% endblock %}
+
+{% block header_title %}Active Stock Alerts{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="space-y-1">
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Active Stock Alerts</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">
+                You have <span class="text-primary font-bold">{{ counts.all }} critical notifications</span> that
+                require your immediate attention.
+            </p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ url_for('mark_all_notifications_read') }}"
+                class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-xl">done_all</span>
+                Mark all as read
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex items-center gap-8 border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar">
+        {% set tabs = [('All', 'All Alerts', counts.all), ('Low Stock', 'Low Stock', counts.low_stock), ('Expiring
+        Soon', 'Expiring Soon', counts.expiring)] %}
+        {% for key, label, count in tabs %}
+        <a href="{{ url_for('notifications', filter=key) }}"
+            class="pb-4 text-sm font-bold tracking-tight border-b-2 transition-all whitespace-nowrap flex items-center gap-2
+           {% if filter_type == key %}border-primary text-primary{% else %}border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200{% endif %}">
+            {{ label }}
+            <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-black {% if filter_type == key %}bg-primary/10 text-primary{% else %}bg-slate-100 dark:bg-slate-800 text-slate-400{% endif %}">
+                {{ count }}
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Alerts Container -->
+    <div class="space-y-6">
+        <!-- Low Stock Alerts -->
+        {% for m in low_stock %}
+        <div
+            class="bg-white dark:bg-slate-900 border-l-4 border-rose-500 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 flex flex-col gap-6 relative group hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="px-3 py-1 bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400 rounded-full text-[10px] font-black uppercase tracking-widest">Critical
+                            Stock</span>
+                        <span class="text-xs text-slate-400 font-medium">Just now</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Urgent: {{ m.name }} below {{
+                        m.low_stock_threshold }} units</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed max-w-4xl">
+                        Inventory ID: <span class="font-mono text-slate-700 dark:text-slate-300">PHA-{{ m.sku or m.id
+                            }}</span>. Current levels are critically low. Minimum required threshold is {{
+                        m.low_stock_threshold * 5 }} units for weekly operations. Current stock: <span
+                            class="text-rose-500 font-black">{{ m.stock_quantity }} units</span>.
+                    </p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">more_vert</span>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('create_order') }}?medicine_id={{ m.id }}"
+                        class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:bg-blue-600 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-lg">shopping_cart</span>
+                        Reorder Now
+                    </a>
+                    <button
+                        class="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">
+                        View Details
+                    </button>
+                </div>
+                <a href="{{ url_for('notification_action', action='dismiss_low_stock', medicine_id=m.id) }}"
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold transition-all px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    Dismiss
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Expiry Alerts -->
+        {% for m in near_expiry %}
+        <div
+            class="bg-white dark:bg-slate-900 border-l-4 border-amber-500 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 flex flex-col gap-6 relative group hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="px-3 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest">Expiry
+                            Warning</span>
+                        <span class="text-xs text-slate-400 font-medium">Recently updated</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Warning: {{ m.name }} expires soon
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed max-w-4xl">
+                        Expiry Date: <span class="text-amber-600 dark:text-amber-400 font-bold uppercase">{{
+                            m.expiry_date.strftime('%b %d, %Y') }}</span>. Remaining: <span class="font-bold">{{
+                            m.stock_quantity }} units</span>. Consider prioritizing this batch for current prescriptions
+                        or checking for stock rotation possibilities.
+                    </p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">more_vert</span>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-3">
+                    <button
+                        class="flex items-center gap-2 px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl text-sm font-bold hover:bg-blue-100 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                        View Batch
+                    </button>
+                    <button
+                        class="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">
+                        Mark for Review
+                    </button>
+                </div>
+                <button
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold transition-all px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Expired Alerts -->
+        {% for m in expired %}
+        <div
+            class="bg-white dark:bg-slate-900 border-l-4 border-red-600 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 flex flex-col gap-6 relative group hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="px-3 py-1 bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 rounded-full text-[10px] font-black uppercase tracking-widest">Expired
+                            stock</span>
+                        <span class="text-xs text-slate-400 font-medium">Critical</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Critical: {{ m.name }} has expired
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed max-w-4xl">
+                        This medicine reached its expiry date on <span class="text-red-600 font-bold underline">{{
+                            m.expiry_date.strftime('%b %d, %Y') }}</span>. Current stock of <span
+                            class="font-bold text-red-600">{{ m.stock_quantity }} units</span> must be removed from
+                        active inventory and disposed of according to safety protocols.
+                    </p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">more_vert</span>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('notification_action', action='urgent_discard', medicine_id=m.id) }}"
+                        class="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/25 hover:bg-red-700 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                        Urgent Discard
+                    </a>
+                    <button
+                        class="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">
+                        Waste Log
+                    </button>
+                </div>
+                <button
+                    class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-bold transition-all px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Empty State -->
+        {% if not near_expiry and not expired and not low_stock %}
+        <div
+            class="py-24 flex flex-col items-center justify-center text-center space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl border-dashed">
+            <div
+                class="size-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-300">
+                <span class="material-symbols-outlined text-4xl">notifications_off</span>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">No active alerts</h3>
+                <p class="text-sm text-slate-500 max-w-xs mx-auto">All inventory levels are optimal and no medicines are
+                    approaching expiry.</p>
+            </div>
+            <a href="{{ url_for('medicine') }}" class="text-primary text-sm font-bold hover:underline">Check
+                Inventory</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - PharmaOne{% endblock %}
+
+{% block header_title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex items-center gap-2 text-slate-500 mb-6">
+        <span class="material-symbols-outlined">search</span>
+        <span>Showing results for "<span class="font-bold text-slate-900 dark:text-white">{{ query }}</span>"</span>
+    </div>
+
+    <!-- Medicines -->
+    <section>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Medicines</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for m in medicines %}
+            <div
+                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h4 class="font-bold text-slate-900 dark:text-white">{{ m.name }}</h4>
+                <p class="text-xs text-slate-500">{{ m.category.name if m.category else 'General' }}</p>
+                <div class="mt-2 flex justify-between items-center">
+                    <span class="text-sm font-bold text-primary">{{ settings.currency_symbol }}{{ m.selling_price
+                        }}</span>
+                    <span
+                        class="text-xs {% if m.stock_quantity > 0 %}text-green-500{% else %}text-red-500{% endif %}">Stock:
+                        {{ m.stock_quantity }}</span>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-slate-500 text-sm">No medicines found.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Suppliers -->
+    <section>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Suppliers</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for s in suppliers %}
+            <div
+                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h4 class="font-bold text-slate-900 dark:text-white">{{ s.name }}</h4>
+                <p class="text-xs text-slate-500">{{ s.contact_person }}</p>
+                <p class="text-xs text-slate-400 mt-1">{{ s.phone }}</p>
+            </div>
+            {% else %}
+            <p class="text-slate-500 text-sm">No suppliers found.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Sales Transactions -->
+    <section>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Sales Transactions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for s in sales %}
+            <div
+                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <h4 class="font-bold text-primary">#TRX-{{ "%03d"|format(s.id) }}</h4>
+                    <span
+                        class="text-[10px] bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full font-bold uppercase">Paid</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">{{ s.customer.name if s.customer else 'Walk-in Customer' }}</p>
+                <div
+                    class="mt-3 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-3">
+                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ settings.currency_symbol }}{{
+                        "%.2f"|format(s.total_amount) }}</span>
+                    <span class="text-[10px] text-slate-400 font-medium">{{ s.date.strftime('%d %b %Y') }}</span>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-slate-500 text-sm">No sales found.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Purchase Orders -->
+    <section>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Purchase Orders</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for p in purchases %}
+            <div
+                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <h4 class="font-bold text-primary">PO-{{ "%04d"|format(p.id) }}</h4>
+                    <span
+                        class="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold uppercase">{{
+                        p.status }}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">{{ p.supplier.name }}</p>
+                <div
+                    class="mt-3 flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-3">
+                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ settings.currency_symbol }}{{
+                        "%.2f"|format(p.total_cost) }}</span>
+                    <span class="text-[10px] text-slate-400 font-medium">{{ p.date.strftime('%d %b %Y') }}</span>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-slate-500 text-sm">No purchase orders found.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

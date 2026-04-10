@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Adjustment - PharmaOne{% endblock %}
+
+{% block header_title %}New Stock Adjustment{% endblock %}
+
+{% block content %}
+<div class="max-w-[800px] mx-auto animate-fade-in">
+    <!-- Breadcrumbs -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{{ url_for('stock_movement') }}"
+                    class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-sm mr-2">history</span>
+                    Stock Movement
+                </a>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <span class="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+                    <span class="ml-1 text-sm font-bold text-slate-900 dark:text-white md:ml-2">New Adjustment</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden shadow-slate-200/50 dark:shadow-none">
+        <!-- Form Header -->
+        <div class="px-8 py-6 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined">restart_alt</span>
+                </div>
+                Manual Stock Adjustment
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 ml-13">Correct inventory levels for damage, loss,
+                or stocktake reconciliations.</p>
+        </div>
+
+        <form method="POST" class="p-8 space-y-8">
+            <!-- Medicine Selection -->
+            <div class="space-y-3">
+                <label for="medicine_id"
+                    class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest pl-1">
+                    Select Medicine <span class="text-red-500">*</span>
+                </label>
+                <div class="relative group">
+                    <span
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                        <span class="material-symbols-outlined">medication</span>
+                    </span>
+                    <select id="medicine_id" name="medicine_id" required
+                        class="block w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white font-medium transition-all appearance-none cursor-pointer">
+                        <option value="" disabled selected>Search & Select Product...</option>
+                        {% for medicine in medicines %}
+                        <option value="{{ medicine.id }}" data-stock="{{ medicine.stock_quantity }}">
+                            {{ medicine.name }} (Current: {{ medicine.stock_quantity }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <span class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Adjustment Type -->
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest pl-1">
+                        Adjustment Action <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="adjustment_type" value="IN" class="hidden peer" required>
+                            <div
+                                class="py-2.5 text-center text-sm font-bold rounded-lg transition-all peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-green-600 dark:peer-checked:text-green-400 peer-checked:shadow-sm text-slate-500">
+                                <span class="material-symbols-outlined text-[18px] align-middle mr-1">add_box</span>
+                                Stock In
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="adjustment_type" value="OUT" class="hidden peer" required checked>
+                            <div
+                                class="py-2.5 text-center text-sm font-bold rounded-lg transition-all peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-red-600 dark:peer-checked:text-red-400 peer-checked:shadow-sm text-slate-500">
+                                <span
+                                    class="material-symbols-outlined text-[18px] align-middle mr-1">remove_circle</span>
+                                Stock Out
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="space-y-3">
+                    <label for="quantity"
+                        class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest pl-1">
+                        Quantity <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative group">
+                        <span
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                            <span class="material-symbols-outlined">numbers</span>
+                        </span>
+                        <input type="number" id="quantity" name="quantity" min="1" required placeholder="0"
+                            class="block w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white font-medium transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reason -->
+            <div class="space-y-3">
+                <label for="reason"
+                    class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest pl-1">
+                    Reason for Adjustment <span class="text-red-500">*</span>
+                </label>
+                <div class="relative group">
+                    <span
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                        <span class="material-symbols-outlined">label</span>
+                    </span>
+                    <select id="reason" name="reason" required
+                        class="block w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white font-medium transition-all appearance-none cursor-pointer">
+                        <option value="" disabled selected>Select Reason...</option>
+                        <option value="Damage">Damaged Product</option>
+                        <option value="Loss">Theft / Loss</option>
+                        <option value="Return">Customer Return</option>
+                        <option value="Expired">Expired Product Removal</option>
+                        <option value="Correction">Stocktake Correction</option>
+                        <option value="Gift">Sample / Gift</option>
+                    </select>
+                    <span class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="space-y-3">
+                <label for="notes"
+                    class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest pl-1">
+                    Additional Notes
+                </label>
+                <textarea id="notes" name="notes" placeholder="e.g. Broken seal during transit, batch mismatch..."
+                    class="block w-full min-h-[120px] p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white font-medium transition-all resize-none"></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-4 pt-4">
+                <a href="{{ url_for('stock_movement') }}"
+                    class="px-8 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-extrabold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="px-10 py-3 bg-primary text-white rounded-xl text-sm font-extrabold shadow-lg shadow-primary/30 hover:bg-blue-600 transition-all active:scale-95 flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    Confirm Adjustment
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Info Box -->
+    <div
+        class="mt-8 p-6 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-2xl flex gap-4">
+        <span class="material-symbols-outlined text-amber-600 dark:text-amber-400">info</span>
+        <div class="text-sm">
+            <p class="font-bold text-amber-900 dark:text-amber-200 mb-1">Audit Policy</p>
+            <p class="text-amber-700 dark:text-amber-400 leading-relaxed">Every manual stock adjustment is recorded in
+                the Stock Movement Log with your user ID and timestamp. Ensure the reason and notes are accurate for
+                regulatory compliance.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

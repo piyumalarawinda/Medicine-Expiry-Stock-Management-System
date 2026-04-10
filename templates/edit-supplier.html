@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Supplier - PharmaOne{% endblock %}
+
+{% block page_title %}Edit Supplier: {{ supplier.name }}{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10">
+    <div class="mb-8">
+        <a class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full shadow-sm hover:shadow-md hover:border-primary/30 dark:hover:border-primary/50 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-all duration-200 group w-fit"
+            href="{{ url_for('supplier') }}">
+            <span
+                class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform duration-200">arrow_back</span>
+            <span class="font-semibold text-sm">Back to Suppliers</span>
+        </a>
+    </div>
+    <div class="mb-8 flex flex-col gap-2">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Edit Supplier Details</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-lg">Update the registration and contact information for
+            <strong>{{ supplier.name }}</strong>.
+        </p>
+    </div>
+
+    <div
+        class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden mb-12">
+        <form method="POST" action="{{ url_for('edit_supplier', id=supplier.id) }}" class="p-6 md:p-8 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="name">
+                        Supplier Name <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all h-12"
+                        id="name" name="name" value="{{ supplier.name }}" type="text" required />
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="email">
+                        Email Address <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all h-12"
+                        id="email" name="email" value="{{ supplier.email }}" type="email" required />
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="phone">
+                        Phone Number <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all h-12"
+                        id="phone" name="phone" value="{{ supplier.phone }}" type="tel" required />
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="contact_person">
+                        Contact Person
+                    </label>
+                    <input
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all h-12"
+                        id="contact_person" name="contact_person" value="{{ supplier.contact_person or '' }}"
+                        type="text" />
+                </div>
+                <div class="md:col-span-2 space-y-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="address">
+                        Full Office Address <span class="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all min-h-[100px]"
+                        id="address" name="address" required>{{ supplier.address }}</textarea>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-slate-100 dark:border-slate-700 flex items-center justify-end gap-3">
+                <button
+                    class="px-6 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    type="button" onclick="window.location.href='{{ url_for('supplier') }}'">
+                    Cancel
+                </button>
+                <button
+                    class="flex items-center gap-2 px-8 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-primary/20"
+                    type="submit">
+                    <span class="material-symbols-outlined text-[18px]">check</span>
+                    Update Supplier
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Report Overview - PharmaOne{% endblock %}
+
+{% block header_title %}Sales Report Overview{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl flex flex-col gap-8">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+      <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Sales Report Overview</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Analyze financial performance, monitor trends, and
+        track inventory movement.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="{{ url_for('export_sales_csv', **current_filters) }}"
+        class="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">download</span>
+        Export CSV
+      </a>
+      <a href="{{ url_for('export_sales_pdf', **current_filters) }}"
+        class="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+        Export PDF
+      </a>
+    </div>
+  </div>
+  <form action="{{ url_for('sales_report') }}" method="GET"
+    class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+      <label class="flex flex-col gap-1.5">
+        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Date Range</span>
+        <div class="relative">
+          <select name="date_range"
+            class="w-full appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-900 dark:text-white focus:border-primary focus:ring-primary">
+            <option value="Last 30 Days" {% if current_filters.date_range=='Last 30 Days' %}selected{% endif %}>Last 30
+              Days</option>
+            <option value="This Month" {% if current_filters.date_range=='This Month' %}selected{% endif %}>This Month
+            </option>
+            <option value="Last Quarter" {% if current_filters.date_range=='Last Quarter' %}selected{% endif %}>Last
+              Quarter</option>
+            <option value="Year to Date" {% if current_filters.date_range=='Year to Date' %}selected{% endif %}>Year to
+              Date</option>
+            <option value="All Time" {% if current_filters.date_range=='All Time' %}selected{% endif %}>All Time
+            </option>
+          </select>
+          <span
+            class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-slate-500 text-[20px]">calendar_today</span>
+        </div>
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Product Category</span>
+        <div class="relative">
+          <select name="category_id"
+            class="w-full appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-900 dark:text-white focus:border-primary focus:ring-primary">
+            <option value="All Categories" {% if not current_filters.category_id or
+              current_filters.category_id=='All Categories' %}selected{% endif %}>All Categories</option>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if current_filters.category_id==cat.id|string %}selected{% endif %}>{{
+              cat.name }}</option>
+            {% endfor %}
+          </select>
+          <span
+            class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-slate-500 text-[20px]">keyboard_arrow_down</span>
+        </div>
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Sales Rep</span>
+        <div class="relative">
+          <select name="user_id"
+            class="w-full appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-900 dark:text-white focus:border-primary focus:ring-primary">
+            <option value="All Representatives" {% if not current_filters.user_id or
+              current_filters.user_id=='All Representatives' %}selected{% endif %}>All Representatives</option>
+            {% for u in users %}
+            <option value="{{ u.id }}" {% if current_filters.user_id==u.id|string %}selected{% endif %}>{{ u.first_name
+              }} {{ u.last_name }}</option>
+            {% endfor %}
+          </select>
+          <span
+            class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-slate-500 text-[20px]">keyboard_arrow_down</span>
+        </div>
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer</span>
+        <input name="customer" value="{{ current_filters.customer or '' }}"
+          class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-900 dark:text-white focus:border-primary focus:ring-primary placeholder-slate-400"
+          placeholder="Search customer..." type="text" />
+      </label>
+      <button type="submit"
+        class="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+        <span class="material-symbols-outlined text-[20px]">filter_alt</span>
+        Apply Filters
+      </button>
+    </div>
+  </form>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div
+      class="rounded-xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+      <div class="relative z-10">
+        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Sales</p>
+        <h3 class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ settings.currency_symbol }}{{
+          "%.2f"|format(total_sales) }}</h3>
+        <div class="mt-2 flex items-center gap-1 text-xs text-slate-400">
+          <span>Reporting period total</span>
+        </div>
+      </div>
+      <div
+        class="absolute -right-4 -bottom-4 z-0 text-slate-50 dark:text-slate-800 opacity-50 dark:opacity-20 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-[120px]">payments</span>
+      </div>
+    </div>
+    <div
+      class="rounded-xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+      <div class="relative z-10">
+        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Avg. Sale Value</p>
+        <h3 class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ settings.currency_symbol }}{{
+          "%.2f"|format(avg_sale_value) }}</h3>
+        <div class="mt-2 flex items-center gap-1 text-xs text-slate-400">
+          <span>Per transaction average</span>
+        </div>
+      </div>
+      <div
+        class="absolute -right-4 -bottom-4 z-0 text-slate-50 dark:text-slate-800 opacity-50 dark:opacity-20 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-[120px]">receipt_long</span>
+      </div>
+    </div>
+    <div
+      class="rounded-xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+      <div class="relative z-10">
+        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Transactions</p>
+        <h3 class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ transaction_count }}</h3>
+        <div class="mt-2 flex items-center gap-1 text-xs text-slate-400">
+          <span>Invoiced sales</span>
+        </div>
+      </div>
+      <div
+        class="absolute -right-4 -bottom-4 z-0 text-slate-50 dark:text-slate-800 opacity-50 dark:opacity-20 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-[120px]">shopping_cart</span>
+      </div>
+    </div>
+    <div
+      class="rounded-xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+      <div class="relative z-10">
+        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Top Product</p>
+        <h3 class="mt-2 text-xl font-bold text-slate-900 dark:text-white leading-tight truncate">{{ top_product }}</h3>
+        <div class="mt-2 flex items-center gap-1 text-sm text-primary">
+          <span class="font-semibold">{{ top_product_count }} units</span>
+          <span class="text-slate-400 dark:text-slate-500">sold</span>
+        </div>
+      </div>
+      <div
+        class="absolute -right-4 -bottom-4 z-0 text-slate-50 dark:text-slate-800 opacity-50 dark:opacity-20 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-[120px]">medication</span>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div
+      class="lg:col-span-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+      <div class="mb-6 flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Revenue History</h3>
+        <div class="flex items-center gap-2">
+          <span class="size-3 rounded-full bg-primary"></span>
+          <span class="text-xs font-medium text-slate-500">Sales ({{ settings.currency_symbol }})</span>
+        </div>
+      </div>
+      <div class="flex h-64 items-end justify-between gap-2 sm:gap-4 px-2">
+        {% for day in rev_days %}
+        <div class="group relative flex w-full flex-col justify-end gap-2">
+          <div class="w-full rounded-t bg-primary/20 group-hover:bg-primary transition-colors duration-300"
+            style="height: {{ (rev_amounts[loop.index0] / max_rev * 100)|int if max_rev > 0 else 5 }}%">
+            <div
+              class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+              {{ settings.currency_symbol }}{{ "%.2f"|format(rev_amounts[loop.index0]) }}
+            </div>
+          </div>
+          <span class="text-center text-[10px] sm:text-xs text-slate-500">{{ day }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div
+      class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col">
+      <h3 class="mb-6 text-lg font-bold text-slate-900 dark:text-white">Sales by Category</h3>
+      <div class="flex flex-1 items-center justify-center">
+        {% set colors = ['#137fec', '#3b82f6', '#93c5fd', '#e2e8f0', '#cbd5e1'] %}
+        <div class="relative size-48 rounded-full" style="background: conic-gradient(
+            {% set total_val = cat_values | map('float') | sum %}
+            {% set accum = namespace(val=0) %}
+            {% for val in cat_values %}
+              {% set start = accum.val %}
+              {% set p = (val|float / total_val * 100) if total_val > 0 else 0 %}
+              {% set accum.val = accum.val + p %}
+              {{ colors[loop.index0 % colors|length] }} {{ start }}% {{ accum.val }}%{{ ',' if not loop.last }}
+            {% endfor %}
+            {% if total_val == 0 %}#cbd5e1 0% 100%{% endif %}
+          );">
+          <div
+            class="absolute inset-0 m-auto size-32 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center flex-col">
+            <span class="text-xl font-bold text-slate-900 dark:text-white">{{ "%.0f"|format((cat_values[0]|float /
+              (cat_values | map('float') | sum) * 100)) if cat_values and (cat_values | map('float') | sum) > 0 else '0'
+              }}%</span>
+            <span class="text-xs text-slate-500">{{ cat_names[0] if cat_names else 'No Data' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 space-y-3">
+        {% for name in cat_names %}
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <span class="size-3 rounded-full"
+              style="background-color: {{ colors[loop.index0 % colors|length] }}"></span>
+            <span class="text-slate-600 dark:text-slate-400">{{ name }}</span>
+          </div>
+          <span class="font-medium text-slate-900 dark:text-white">{{ settings.currency_symbol }}{{
+            "%.2f"|format(cat_values[loop.index0]|float) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+    <div
+      class="border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white">Recent Transactions</h3>
+      <div class="flex items-center gap-2 text-sm text-slate-500">
+        <span>Showing {{ sales|length }} transactions</span>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+          <tr>
+            <th class="px-6 py-3 font-semibold">Date</th>
+            <th class="px-6 py-3 font-semibold">Invoice ID</th>
+            <th class="px-6 py-3 font-semibold">Product</th>
+            <th class="px-6 py-3 font-semibold">Customer</th>
+            <th class="px-6 py-3 font-semibold">Sales Rep</th>
+            <th class="px-6 py-3 font-semibold text-right">Amount</th>
+            <th class="px-6 py-3 font-semibold text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+          {% for sale in sales %}
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <td class="px-6 py-4 text-slate-500 text-xs">{{ sale.date.strftime('%b %d, %Y') }}</td>
+            <td class="px-6 py-4 font-medium text-primary text-xs">#INV-{{ "%05d"|format(sale.id) }}</td>
+            <td class="px-6 py-4 text-slate-900 dark:text-white text-xs">
+              {% if sale.items %}
+              {{ sale.items[0].medicine.name }}{% if sale.items|length > 1 %} +{{ sale.items|length - 1 }} more{% endif
+              %}
+              {% else %}
+              N/A
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 text-slate-600 dark:text-slate-300 text-xs">
+              <div class="flex items-center gap-2">
+                <div class="size-6 rounded-full bg-slate-200 bg-cover bg-center shrink-0"
+                  style="background-image: url('https://ui-avatars.com/api/?name={{ sale.customer.name if sale.customer else 'Walk+In' }}&background=137fec&color=fff');">
+                </div>
+                <span class="truncate max-w-[100px]">{{ sale.customer.name if sale.customer else 'Walk-in' }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-slate-600 dark:text-slate-300 text-xs text-center">
+              {{ sale.user.first_name if sale.user and sale.user.first_name else 'System' }}
+            </td>
+            <td class="px-6 py-4 text-right font-bold text-slate-900 dark:text-white text-xs">{{
+              settings.currency_symbol }}{{ "%.2f"|format(sale.total_amount) }}</td>
+            <td class="px-6 py-4 text-center">
+              <span
+                class="inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20 uppercase">Paid</span>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="px-6 py-8 text-center text-slate-500 italic">No transactions found for this period.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

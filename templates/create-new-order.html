@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Order - PharmaOne{% endblock %}
+
+{% block page_title %}Create New Order{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10">
+    <div class="mb-8">
+        <a class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full shadow-sm hover:shadow-md hover:border-primary/30 dark:hover:border-primary/50 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-all duration-200 group w-fit"
+            href="{{ url_for('purchase') }}">
+            <span
+                class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform duration-200">arrow_back</span>
+            <span class="font-semibold text-sm">Back to Orders</span>
+        </a>
+    </div>
+    <div class="mb-8 flex flex-col gap-2">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Create New Order</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-lg">Enter details to initiate a new procurement order for
+            pharmaceutical stock replenishment.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('create_order') }}" id="order-form">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-6">Product
+                        Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300"
+                                for="medicine_id">Product Name</label>
+                            <select
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="medicine_id" name="medicine_id" required>
+                                <option value="" disabled selected>Select Medicine</option>
+                                {% for medicine in medicines %}
+                                <option value="{{ medicine.id }}" data-price="{{ medicine.buying_price }}">{{
+                                    medicine.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300"
+                                for="supplier_id">Supplier</label>
+                            <select
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="supplier_id" name="supplier_id" required>
+                                <option value="" disabled selected>Select Supplier</option>
+                                {% for supplier in suppliers %}
+                                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300"
+                                for="quantity">Quantity</label>
+                            <input
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="quantity" name="quantity" placeholder="0" type="number" min="1" required />
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300" for="unit_price">Unit
+                                Price</label>
+                            <input
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="unit_price" name="unit_price" placeholder="0.00" type="number" step="0.01"
+                                required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div
+                    class="bg-indigo-900 dark:bg-slate-800/50 rounded-3xl p-8 border border-slate-800 dark:border-slate-700 sticky top-10">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Order Summary</h3>
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center text-slate-400">
+                            <span>Subtotal</span>
+                            <span class="text-white font-bold" id="subtotal_display">{{ settings.currency_symbol
+                                }}0.00</span>
+                        </div>
+                        <div class="pt-6 border-t border-slate-800 flex justify-between items-center">
+                            <span class="text-xl font-black text-white">Total</span>
+                            <span class="text-3xl font-black text-primary" id="total_display">{{
+                                settings.currency_symbol }}0.00</span>
+                        </div>
+                        <div class="pt-8 space-y-4">
+                            <button type="submit"
+                                class="w-full py-4 bg-primary text-white rounded-2xl font-black text-lg hover:bg-blue-600 transition-all shadow-xl shadow-primary/20">
+                                Submit Order
+                            </button>
+                            <button type="button"
+                                class="w-full py-4 border border-slate-700 text-slate-400 rounded-2xl font-bold hover:bg-slate-800 transition-all"
+                                onclick="window.location.href='{{ url_for('purchase') }}'">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const medicineSelect = document.getElementById('medicine_id');
+    const unitPriceInput = document.getElementById('unit_price');
+    const quantityInput = document.getElementById('quantity');
+    const subtotalDisplay = document.getElementById('subtotal_display');
+    const totalDisplay = document.getElementById('total_display');
+
+    function updateSummary() {
+        const price = parseFloat(unitPriceInput.value) || 0;
+        const qty = parseInt(quantityInput.value) || 0;
+        const subtotal = price * qty;
+        subtotalDisplay.innerText = `{{ settings.currency_symbol }}${subtotal.toFixed(2)}`;
+        totalDisplay.innerText = `{{ settings.currency_symbol }}${subtotal.toFixed(2)}`;
+    }
+
+    medicineSelect.addEventListener('change', () => {
+        const selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
+        const price = selectedOption.getAttribute('data-price');
+        unitPriceInput.value = price;
+        updateSummary();
+    });
+
+    unitPriceInput.addEventListener('input', updateSummary);
+    quantityInput.addEventListener('input', updateSummary);
+</script>
+{% endblock %}

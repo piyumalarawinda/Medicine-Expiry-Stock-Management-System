@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Clinic Registration - MedStock Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
+    <header
+        class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+        <div class="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center size-8 rounded-lg">
+                    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" class="size-8">
+                </div>
+                <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">MedStock Manager</h1>
+            </div>
+            <a class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"
+                href="login.html">
+                <span class="hidden sm:inline">Already have an account?</span>
+                <span class="sm:hidden">Login</span>
+                <span class="material-symbols-outlined text-[20px]">login</span>
+            </a>
+        </div>
+    </header>
+    <main class="flex-1 flex items-center justify-center py-10 px-4 sm:px-6">
+        <div
+            class="w-full max-w-[960px] bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row">
+            <div
+                class="hidden md:flex md:w-1/3 bg-slate-50 dark:bg-slate-800 relative flex-col justify-start p-8 border-r border-slate-200 dark:border-slate-700">
+                <div>
+                    <div class="size-12 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-3xl">add_business</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Partner with us</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Join over 500+ clinics managing their inventory efficiently. Track expiration dates, automate
+                        reorders, and reduce waste.
+                    </p>
+                </div>
+            </div>
+            <div class="flex-1 p-6 sm:p-10">
+                <div class="mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">
+                        Register Your Clinic</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Enter your clinic's details to create a new
+                        administrator account.</p>
+                </div>
+                <form class="space-y-6">
+                    <div class="space-y-4">
+                        <h3
+                            class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">domain</span> Clinic Information
+                        </h3>
+                        <div class="grid gap-4">
+                            <label class="block">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Clinic
+                                    Name <span class="text-red-500">*</span></span>
+                                <input
+                                    class="form-input w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-11 transition-shadow"
+                                    placeholder="e.g. HealthFirst Medical Center" required="" type="text" />
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Contact
+                                    Person Name <span class="text-red-500">*</span></span>
+                                <input
+                                    class="form-input w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-11 transition-shadow"
+                                    placeholder="Full name of administrator" required="" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3
+                            class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <span class="material-symbols-outlined text-sm">contact_mail</span> Contact Details
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="block">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Email
+                                    Address <span class="text-red-500">*</span></span>
+                                <div class="relative">
+                                    <input
+                                        class="form-input w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-11 pl-10 transition-shadow"
+                                        placeholder="clinic@example.com" required="" type="email" />
+                                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <span class="material-symbols-outlined text-[20px]">mail</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Phone
+                                    Number <span class="text-red-500">*</span></span>
+                                <div class="relative">
+                                    <input
+                                        class="form-input w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-11 pl-10 transition-shadow"
+                                        placeholder="+1 (555) 000-0000" required="" type="tel" />
+                                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <span class="material-symbols-outlined text-[20px]">call</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3
+                            class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <span class="material-symbols-outlined text-sm">lock</span> Security
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="block group">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Password
+                                    <span class="text-red-500">*</span></span>
+                                <div class="relative">
+                                    <input
+                                        class="form-input w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-11 pr-10 transition-shadow"
+                                        placeholder="••••••••" required="" type="password" />
+                                    <button
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                                        type="button">
+                                        <span class="material-symbols-outlined text-[20px]">visibility_off</span>
+                                    </button>
+                                </div>
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Confirm
+                                    Password <span class="text-red-500">*</span></span>
+                                <div class="relative">
+                                    <input
+                                        class="form-input w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-11 pr-10 transition-shadow"
+                                        placeholder="••••••••" required="" type="password" />
+                                </div>
+                            </label>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 pl-1">
+                            Password must be at least 8 characters long and include a number.
+                        </p>
+                    </div>
+                    <div class="pt-4 flex flex-col gap-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-6 items-center">
+                                <input
+                                    class="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-slate-50 dark:bg-slate-800"
+                                    id="terms" name="terms" type="checkbox" />
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label class="font-medium text-slate-700 dark:text-slate-300" for="terms">I agree to the
+                                    <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a
+                                        class="text-primary hover:underline" href="#">Privacy Policy</a>.</label>
+                            </div>
+                        </div>
+                        <button
+                            class="flex w-full cursor-pointer items-center justify-center rounded-lg bg-primary py-3 px-4 text-sm font-bold text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-colors"
+                            type="submit">
+                            Create Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="fixed bottom-4 right-4 flex gap-2">
+            <button aria-label="Help"
+                class="bg-primary text-white rounded-full p-3 shadow-lg hover:bg-blue-600 transition-all cursor-pointer">
+                <span class="material-symbols-outlined block">support_agent</span>
+            </button>
+        </div>
+    </main>
+    <footer class="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p>© 2023 MedStock Manager. All rights reserved.</p>
+    </footer>
+
+</body>
+
+</html>

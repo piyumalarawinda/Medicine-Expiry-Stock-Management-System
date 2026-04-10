@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Community Forum - PharmaOne{% endblock %}
+
+{% block header_title %}Community Forum{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
+    <!-- Side Stats & Categories -->
+    <div class="hidden lg:block space-y-6">
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-3xl p-6 border border-slate-200/60 dark:border-slate-800/60 text-center">
+            <div class="size-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto mb-4">
+                <span class="material-symbols-outlined text-4xl">diversity_3</span>
+            </div>
+            <h3 class="font-black text-text-main dark:text-white text-xl">1.2k+</h3>
+            <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-6">Active Owners</p>
+            <button
+                class="w-full py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl font-black shadow-lg shadow-primary/20 transition-all">
+                Post Discussion
+            </button>
+        </div>
+
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-3xl border border-slate-200/60 dark:border-slate-800/60 overflow-hidden">
+            <div
+                class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 font-bold text-text-main dark:text-white uppercase text-[10px] tracking-widest">
+                Browse Topics
+            </div>
+            <div class="p-2 space-y-1">
+                {% set forum_cats = [] %}
+                {% if settings.forum_general_talk %}{% set _ = forum_cats.append(('chat', 'General Talk', '420')) %}{%
+                endif %}
+                {% if settings.forum_announcements %}{% set _ = forum_cats.append(('campaign', 'Announcements', '12'))
+                %}{% endif %}
+                {% if settings.forum_tips_tricks %}{% set _ = forum_cats.append(('tips_and_updates', 'Tips & Tricks',
+                '156')) %}{% endif %}
+                {% if settings.forum_bug_reports %}{% set _ = forum_cats.append(('bug_report', 'Bug Reports', '84'))
+                %}{% endif %}
+                {% if settings.forum_feature_requests %}{% set _ = forum_cats.append(('new_releases', 'Feature
+                Requests', '230')) %}{% endif %}
+
+                {% for icon, label, count in forum_cats %}
+                <div
+                    class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-sm text-slate-400 group-hover:text-primary">{{ icon
+                            }}</span>
+                        <span class="text-sm font-bold text-text-main dark:text-slate-200">{{ label }}</span>
+                    </div>
+                    <span class="text-[10px] font-black text-slate-400">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:col-span-3 space-y-6">
+        <!-- Forum Header -->
+        <div
+            class="bg-white dark:bg-card-dark p-6 rounded-3xl border border-slate-200/60 dark:border-slate-800/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div
+                    class="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                    <span class="material-symbols-outlined">filter_list</span>
+                </div>
+                <div>
+                    <h2 class="font-black text-text-main dark:text-white text-lg">Active Discussions</h2>
+                    <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest leading-none">Showing
+                        Latest First</p>
+                </div>
+            </div>
+            <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                <button
+                    class="bg-white dark:bg-slate-700 shadow-sm px-4 py-2 rounded-lg text-xs font-bold text-primary">Trending</button>
+                <button class="px-4 py-2 rounded-lg text-xs font-bold text-slate-500">Recent</button>
+                <button class="px-4 py-2 rounded-lg text-xs font-bold text-slate-500">Unanswered</button>
+            </div>
+        </div>
+
+        <!-- Threads -->
+        <div class="space-y-4">
+            {% set threads = [
+            ('How to handle bulk medicine returns?', 'John Smith', 'Setup', '24', '2.5k', '5h ago'),
+            ('Best practices for low stock alerts configuration', 'Sarah Connor', 'Management', '15', '1.1k', '1d ago'),
+            ('Unexpected expiry date calculation in v2.0', 'Michael Bay', 'Bugs', '42', '4.8k', '3h ago'),
+            ('Integrating with new insurance carriers', 'Emily Blunt', 'General', '8', '600', '2d ago'),
+            ('PharmaOne Premium Design Feedback', 'Admin', 'Updates', '156', '12k', '1w ago')
+            ] %}
+            {% for title, user, tag, replies, views, time in threads %}
+            <div
+                class="bg-card-light dark:bg-card-dark p-6 rounded-3xl border border-slate-200/60 dark:border-slate-800/60 group hover:border-primary/50 transition-all cursor-pointer">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div class="flex-1 space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">{{
+                                tag }}</span>
+                            <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest">{{ time
+                                }}</span>
+                        </div>
+                        <h3
+                            class="font-bold text-text-main dark:text-white text-lg group-hover:text-primary transition-colors leading-tight">
+                            {{ title }}</h3>
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="size-6 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-white dark:border-slate-800 overflow-hidden">
+                                <img src="https://ui-avatars.com/api/?name={{ user }}&background=random" alt="Avatar">
+                            </div>
+                            <span class="text-xs font-bold text-text-main dark:text-slate-300">{{ user }}</span>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center gap-6 shrink-0 md:bg-slate-50/50 dark:md:bg-slate-800/30 md:px-6 md:py-4 rounded-2xl">
+                        <div class="text-center">
+                            <p class="font-black text-text-main dark:text-white text-base">{{ replies }}</p>
+                            <p class="text-[8px] font-black text-text-muted uppercase tracking-widest">Replies</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-black text-text-main dark:text-white text-base">{{ views }}</p>
+                            <p class="text-[8px] font-black text-text-muted uppercase tracking-widest">Views</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Load More -->
+        <button
+            class="w-full py-6 text-xs font-black text-primary bg-primary/5 hover:bg-primary/10 rounded-3xl border border-dashed border-primary/30 transition-all uppercase tracking-[3px]">
+            Load More Threads
+        </button>
+    </div>
+</div>
+{% endblock %}

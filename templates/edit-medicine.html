@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Medicine - PharmaOne{% endblock %}
+
+{% block page_title %}Edit Medicine: {{ medicine.name }}{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10">
+    <div class="mb-8">
+        <a class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full shadow-sm hover:shadow-md hover:border-primary/30 dark:hover:border-primary/50 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-all duration-200 group w-fit"
+            href="{{ url_for('medicine') }}">
+            <span
+                class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform duration-200">arrow_back</span>
+            <span class="font-semibold text-sm">Back to Medicine List</span>
+        </a>
+    </div>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Edit Medicine Details</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-lg">Update the information for <strong>{{ medicine.name
+                }}</strong> below.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('edit_medicine', id=medicine.id) }}"
+        class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="p-6 md:p-8 space-y-8">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">pill</span>
+                    Basic Information
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="name">Medicine Name
+                            <span class="text-red-500">*</span></label>
+                        <input
+                            class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                            id="name" name="name" value="{{ medicine.name }}" type="text" required />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="sku">Batch Number /
+                            SKU <span class="text-red-500">*</span></label>
+                        <input
+                            class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                            id="sku" name="sku" value="{{ medicine.sku }}" type="text" required />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                            for="category">Category</label>
+                        <select
+                            class="form-select block w-full rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                            id="category" name="category">
+                            {% for cat in categories %}
+                            <option value="{{ cat.name }}" {% if medicine.category_id==cat.id %}selected{% endif %}>{{
+                                cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                            for="stock_quantity">Current Stock Level</label>
+                        <input
+                            class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                            id="stock_quantity" name="stock_quantity" value="{{ medicine.stock_quantity }}"
+                            type="number" required />
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-200 dark:border-slate-800" />
+
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">payments</span>
+                    Pricing & Supply
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="buying_price">Buying
+                            Price</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">{{
+                                settings.currency_symbol }}</span>
+                            <input
+                                class="form-input block w-full pl-7 rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                                id="buying_price" name="buying_price" value="{{ " %.2f"|format(medicine.buying_price)
+                                }}" type="number" step="0.01" required />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                            for="selling_price">Selling Price</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">{{
+                                settings.currency_symbol }}</span>
+                            <input
+                                class="form-input block w-full pl-7 rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                                id="selling_price" name="selling_price" value="{{ " %.2f"|format(medicine.selling_price)
+                                }}" type="number" step="0.01" required />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                            for="supplier_id">Supplier</label>
+                        <select
+                            class="form-select block w-full rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                            id="supplier_id" name="supplier_id">
+                            {% for supplier in suppliers %}
+                            <option value="{{ supplier.id }}" {% if medicine.supplier_id==supplier.id %}selected{% endif
+                                %}>{{ supplier.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="expiry_date">Expiry
+                            Date</label>
+                        <input
+                            class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-11"
+                            id="expiry_date" name="expiry_date" value="{{ medicine.expiry_date.strftime('%Y-%m-%d') }}"
+                            type="date" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-end gap-4">
+                <button type="button" onclick="window.location.href='{{ url_for('medicine') }}'"
+                    class="px-6 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-blue-600 shadow-lg shadow-primary/20 transition-all">
+                    Update Medicine
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

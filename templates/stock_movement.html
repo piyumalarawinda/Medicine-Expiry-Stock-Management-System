@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Movement - PharmaOne{% endblock %}
+
+{% block header_title %}Stock Movement Log{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="space-y-1">
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Stock Movement Log</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Audit trail for all inventory additions and deductions
+                across batches.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ url_for('export_inventory') }}"
+                class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-xl">download</span>
+                Export CSV
+            </a>
+            <button onclick="window.location.href='{{ url_for('adjust_stock') }}'"
+                class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:bg-blue-600 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-xl">add_circle</span>
+                New Adjustment
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+        <!-- Tabs & Filters -->
+        <div class="p-6 pb-0 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex overflow-x-auto gap-8 no-scrollbar scroll-smooth">
+                {% set tabs = [('All', 'All Movements'), ('RESTOCK', 'Purchases'), ('SALE', 'Sales'), ('ADJUSTMENT',
+                'Adjustments'), ('EXPIRY', 'Expiries')] %}
+                {% for key, label in tabs %}
+                <a href="{{ url_for('stock_movement', type=key if key != 'All' else 'All', category=filters.category, q=filters.q) }}"
+                    class="pb-4 text-sm font-bold tracking-tight border-b-2 transition-all whitespace-nowrap
+                   {% if filters.type == key %}border-primary text-primary{% else %}border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200{% endif %}">
+                    {{ label }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="p-6 bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800">
+            <form action="{{ url_for('stock_movement') }}" method="GET"
+                class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <input type="hidden" name="type" value="{{ filters.type }}">
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Search
+                        Product</label>
+                    <div class="relative group">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                        <input type="text" name="q" value="{{ filters.q }}" placeholder="Search name..."
+                            class="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Movement
+                        Type</label>
+                    <select name="type" onchange="this.form.submit()"
+                        class="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-4 focus:ring-primary/10 appearance-none outline-none">
+                        <option value="All" {% if filters.type=='All' %}selected{% endif %}>All Types</option>
+                        <option value="RESTOCK" {% if filters.type=='RESTOCK' %}selected{% endif %}>Purchase</option>
+                        <option value="SALE" {% if filters.type=='SALE' %}selected{% endif %}>Sale</option>
+                        <option value="ADJUSTMENT" {% if filters.type=='ADJUSTMENT' %}selected{% endif %}>Adjustment
+                        </option>
+                        <option value="EXPIRY" {% if filters.type=='EXPIRY' %}selected{% endif %}>Expiry Discard
+                        </option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Product
+                        Category</label>
+                    <select name="category" onchange="this.form.submit()"
+                        class="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-4 focus:ring-primary/10 appearance-none outline-none">
+                        <option value="All" {% if filters.category=='All' %}selected{% endif %}>All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if filters.category==cat.id|string %}selected{% endif %}>{{
+                            cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="hidden">Search</button>
+                    <a href="{{ url_for('stock_movement') }}"
+                        class="w-full py-2 px-4 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-sm font-bold hover:bg-slate-300 dark:hover:bg-slate-700 text-center transition-all">Reset
+                        Filters</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Content -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[1000px]">
+                <thead>
+                    <tr
+                        class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] border-b border-slate-100 dark:border-slate-800">
+                        <th class="px-8 py-5">Date & Time</th>
+                        <th class="px-8 py-5">Product Name</th>
+                        <th class="px-8 py-5">Batch Number</th>
+                        <th class="px-8 py-5">Type</th>
+                        <th class="px-8 py-5 text-right">Qty Change</th>
+                        <th class="px-8 py-5 text-right">Stock After</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50 dark:divide-slate-800">
+                    {% for log in logs %}
+                    <tr class="group hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-all">
+                        <td class="px-8 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-medium">
+                            {{ log.timestamp.strftime('%b %d, %Y \u00B7 %H:%M') }}
+                        </td>
+                        <td class="px-8 py-4 whitespace-nowrap">
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{
+                                    log.medicine.name }}</span>
+                                <span class="text-xs text-slate-400 font-medium">{{ log.medicine.category.name if
+                                    log.medicine.category else 'General' }}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-4 whitespace-nowrap">
+                            {% if 'Sale #' in log.reason %}
+                            {% set sale_id = log.reason.split('#')[1].split(' ')[0] %}
+                            <a href="{{ url_for('invoice', sale_id=sale_id) }}"
+                                class="text-xs font-mono text-primary bg-primary/5 dark:bg-primary/20 hover:bg-primary/10 px-2 py-1 rounded-md border border-primary/20 transition-colors">
+                                #INV-{{ "%05d" | format(sale_id|int) }}
+                            </a>
+                            {% elif 'Order #' in log.reason %}
+                            {% set order_id = log.reason.split('#')[1].split(' ')[0] %}
+                            <a href="{{ url_for('order_summary', order_id=order_id) }}"
+                                class="text-xs font-mono text-primary bg-primary/5 dark:bg-primary/20 hover:bg-primary/10 px-2 py-1 rounded-md border border-primary/20 transition-colors">
+                                #ORD-{{ "%05d" | format(order_id|int) }}
+                            </a>
+                            {% else %}
+                            <span
+                                class="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                #LOG-{{ "%05d" | format(log.id) }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-4 whitespace-nowrap">
+                            {% if 'RESTOCK' in log.reason.upper() %}
+                            <span
+                                class="px-3 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 rounded-full text-[10px] font-bold uppercase tracking-wider">Purchase</span>
+                            {% elif 'SALE' in log.reason.upper() %}
+                            <span
+                                class="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider">Sale</span>
+                            {% elif 'EXPIRY' in log.reason.upper() %}
+                            <span
+                                class="px-3 py-1 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400 rounded-full text-[10px] font-bold uppercase tracking-wider">Expiry
+                                Discard</span>
+                            {% else %}
+                            <span
+                                class="px-3 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider">Adjustment</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-4 whitespace-nowrap text-right">
+                            {% if log.change_quantity > 0 %}
+                            <span class="text-sm font-extrabold text-emerald-500">+{{ log.change_quantity }}</span>
+                            {% else %}
+                            <span class="text-sm font-extrabold text-rose-500">{{ log.change_quantity }}</span>
+                            {% endif %}
+                        </td>
+                        <td
+                            class="px-8 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-700 dark:text-slate-300">
+                            {{ log.medicine.stock_quantity }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="px-8 py-16 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3">
+                                <span class="material-symbols-outlined text-4xl text-slate-300">inventory_2</span>
+                                <p class="text-slate-400 font-medium">No movement logs found matching your filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Bar -->
+        <div
+            class="px-8 py-6 bg-slate-50/50 dark:bg-slate-800/20 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Showing {{ (pagination.page - 1) * pagination.per_page + 1 if pagination.total > 0 else 0 }} to
+                {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total
+                    else pagination.total }} of {{ pagination.total }} movements </span>
+
+                    <div class="flex items-center gap-2">
+                        {% if pagination.has_prev %}
+                        <a href="{{ url_for('stock_movement', page=pagination.prev_num, **filters) }}"
+                            class="size-9 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-all">
+                            <span class="material-symbols-outlined text-sm">chevron_left</span>
+                        </a>
+                        {% else %}
+                        <div
+                            class="size-9 flex items-center justify-center bg-transparent border border-slate-100 dark:border-slate-800 rounded-xl text-slate-200 dark:text-slate-800 cursor-not-allowed">
+                            <span class="material-symbols-outlined text-sm">chevron_left</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-center gap-1.5">
+                            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1,
+                            right_current=2) %}
+                            {% if page_num %}
+                            {% if page_num == pagination.page %}
+                            <span
+                                class="size-9 flex items-center justify-center bg-primary text-white rounded-xl text-xs font-black shadow-lg shadow-primary/25">{{
+                                page_num }}</span>
+                            {% else %}
+                            <a href="{{ url_for('stock_movement', page=page_num, **filters) }}"
+                                class="size-9 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-500 hover:text-primary hover:border-primary transition-all">
+                                {{ page_num }}
+                            </a>
+                            {% endif %}
+                            {% else %}
+                            <span class="text-slate-300 dark:text-slate-700 px-1 font-black">...</span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        {% if pagination.has_next %}
+                        <a href="{{ url_for('stock_movement', page=pagination.next_num, **filters) }}"
+                            class="size-9 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-all">
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                        </a>
+                        {% else %}
+                        <div
+                            class="size-9 flex items-center justify-center bg-transparent border border-slate-100 dark:border-slate-800 rounded-xl text-slate-200 dark:text-slate-800 cursor-not-allowed">
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                        </div>
+                        {% endif %}
+                    </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div
+            class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-3xl shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Inward (Month)</span>
+                <div class="bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-lg flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">trending_up</span>
+                    <span class="text-[10px] font-black">+12%</span>
+                </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-4xl font-black text-slate-900 dark:text-white">{{ "{:,}".format(stats.inward)
+                    }}</span>
+                <span class="text-xs font-bold text-slate-400">units</span>
+            </div>
+        </div>
+
+        <div
+            class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-3xl shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Outward (Month)</span>
+                <div class="bg-rose-500/10 text-rose-500 px-2 py-1 rounded-lg flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">trending_down</span>
+                    <span class="text-[10px] font-black">-5%</span>
+                </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-4xl font-black text-slate-900 dark:text-white">{{ "{:,}".format(stats.outward)
+                    }}</span>
+                <span class="text-xs font-bold text-slate-400">units</span>
+            </div>
+        </div>
+
+        <div
+            class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-3xl shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Net Stock Adjustment</span>
+                <span class="text-[10px] font-black text-primary uppercase tracking-widest">Growth Trend</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-4xl font-black text-slate-900 dark:text-white">{% if stats.net > 0 %}+{% endif %}{{
+                    "{:,}".format(stats.net) }}</span>
+                <span class="text-xs font-bold text-slate-400">units</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

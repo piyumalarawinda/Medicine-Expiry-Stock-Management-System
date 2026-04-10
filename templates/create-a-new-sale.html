@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Sale - PharmaOne{% endblock %}
+
+{% block page_title %}Create New Sale{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10">
+    <div class="mb-8">
+        <a class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full shadow-sm hover:shadow-md hover:border-primary/30 dark:hover:border-primary/50 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-all duration-200 group w-fit"
+            href="{{ url_for('sale') }}">
+            <span
+                class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform duration-200">arrow_back</span>
+            <span class="font-semibold text-sm">Back to Sales</span>
+        </a>
+    </div>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Create New Sale</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-lg">Quickly process a new customer transaction and inventory
+            reduction.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('create_sale') }}" id="sale-form">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Sale Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300"
+                                for="customer_id">Customer Name</label>
+                            <select
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="customer_id" name="customer_id">
+                                <option value="">Walk-in Customer</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300"
+                                for="medicine_id">Medicine</label>
+                            <select
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="medicine_id" name="medicine_id" required>
+                                <option value="" disabled selected>Select Product</option>
+                                {% for medicine in medicines %}
+                                <option value="{{ medicine.id }}" data-price="{{ medicine.selling_price }}"
+                                    data-stock="{{ medicine.stock_quantity }}">{{ medicine.name }} (Stock: {{
+                                    medicine.stock_quantity }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300"
+                                for="quantity">Quantity</label>
+                            <input
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary/20 focus:bg-white dark:focus:bg-slate-800 rounded-2xl p-4 transition-all outline-none text-slate-900 dark:text-white"
+                                id="quantity" name="quantity" placeholder="1" type="number" min="1" required />
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Unit Price</label>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-2xl p-4 text-slate-900 dark:text-white font-bold"
+                                id="unit_price_display">
+                                {{ settings.currency_symbol }}0.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div
+                    class="bg-slate-900 dark:bg-slate-800 rounded-3xl p-8 border border-slate-800 dark:border-slate-700 sticky top-10">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Checkout Summary</h3>
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center text-slate-400">
+                            <span>Subtotal</span>
+                            <span class="text-white font-bold" id="subtotal_display">{{ settings.currency_symbol
+                                }}0.00</span>
+                        </div>
+                        <div class="pt-6 border-t border-slate-800 flex justify-between items-center">
+                            <span class="text-xl font-black text-white">Grand Total</span>
+                            <span class="text-3xl font-black text-primary" id="total_display">{{
+                                settings.currency_symbol }}0.00</span>
+                        </div>
+                        <div class="pt-8 space-y-4">
+                            <button type="submit"
+                                class="w-full py-4 bg-primary text-white rounded-2xl font-black text-lg hover:bg-blue-600 transition-all shadow-xl shadow-primary/20">
+                                Complete Sale
+                            </button>
+                            <button type="button"
+                                class="w-full py-4 border border-slate-700 text-slate-400 rounded-2xl font-bold hover:bg-slate-800 transition-all"
+                                onclick="window.location.href='{{ url_for('sale') }}'">
+                                Cancel Sale
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const medicineSelect = document.getElementById('medicine_id');
+    const quantityInput = document.getElementById('quantity');
+    const unitPriceDisplay = document.getElementById('unit_price_display');
+    const subtotalDisplay = document.getElementById('subtotal_display');
+    const totalDisplay = document.getElementById('total_display');
+
+    let currentPrice = 0;
+
+    function updateSummary() {
+        const qty = parseInt(quantityInput.value) || 0;
+        const subtotal = currentPrice * qty;
+        subtotalDisplay.innerText = `{{ settings.currency_symbol }}${subtotal.toFixed(2)}`;
+        totalDisplay.innerText = `{{ settings.currency_symbol }}${subtotal.toFixed(2)}`;
+    }
+
+    medicineSelect.addEventListener('change', () => {
+        const selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
+        currentPrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+        unitPriceDisplay.innerText = `{{ settings.currency_symbol }}${currentPrice.toFixed(2)}`;
+        updateSummary();
+    });
+
+    quantityInput.addEventListener('input', updateSummary);
+</script>
+{% endblock %}

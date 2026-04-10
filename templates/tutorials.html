@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Video Tutorials - PharmaOne{% endblock %}
+
+{% block header_title %}Video Tutorials{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-12 animate-fade-in">
+    <!-- Hero Section -->
+    <div class="text-center space-y-4">
+        <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">Learn in Minutes</h1>
+        <p class="text-text-muted max-w-2xl mx-auto text-lg">Visual step-by-step guides to help you master every aspect
+            of the PharmaOne system.</p>
+    </div>
+
+    <!-- Video Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% set videos = [
+        ('System Overview', '10:45',
+        'https://images.unsplash.com/photo-1576091160550-217359f41f18?w=800&auto=format&fit=crop&q=60', 'Learn the core
+        features and navigation of the PharmaOne dashboard.'),
+        ('Managing Inventory', '08:20',
+        'https://images.unsplash.com/photo-1587854692152-cbe660dbbb88?w=800&auto=format&fit=crop&q=60', 'How to add
+        medications, track batches, and handle supplier orders.'),
+        ('Sales & POS', '06:15',
+        'https://images.unsplash.com/photo-1556742049-13ed730707d4?w=800&auto=format&fit=crop&q=60', 'Processing
+        customer sales, generating invoices, and handling returns.'),
+        ('Reporting Suite', '12:30',
+        'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60', 'Deep dive into
+        sales analytics, tax reports, and performance tracking.'),
+        ('User Permissions', '05:50',
+        'https://images.unsplash.com/photo-1551288049-bbda4833effb?w=800&auto=format&fit=crop&q=60', 'Setting up staff
+        accounts and managing role-based access control.'),
+        ('Advanced Settings', '09:10',
+        'https://images.unsplash.com/photo-1454165833767-027ffea9e787?w=800&auto=format&fit=crop&q=60', 'Configuring
+        business details, localization, and system preferences.')
+        ] %}
+        {% for title, duration, img, desc in videos %}
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-3xl border border-slate-200/60 dark:border-slate-800/60 overflow-hidden group hover:border-primary/50 transition-all hover:shadow-2xl hover:-translate-y-2">
+            <div class="relative h-48 overflow-hidden">
+                <img src="{{ img }}" alt="{{ title }}"
+                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                <div
+                    class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div
+                        class="size-16 rounded-full bg-primary flex items-center justify-center text-white transform scale-90 group-hover:scale-100 transition-transform shadow-xl">
+                        <span class="material-symbols-outlined text-3xl fill">play_arrow</span>
+                    </div>
+                </div>
+                <div
+                    class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-widest shadow-lg">
+                    {{ duration }}
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="size-2 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Training Module</span>
+                </div>
+                <h3 class="font-bold text-text-main dark:text-white mb-2 group-hover:text-primary transition-colors">{{
+                    title }}</h3>
+                <p class="text-text-muted text-xs leading-relaxed">{{ desc }}</p>
+                <div
+                    class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="size-6 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Team Pharma</span>
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">favorite</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Call to Action -->
+    <div class="bg-slate-100 dark:bg-slate-800/50 rounded-[40px] p-10 text-center space-y-6">
+        <h2 class="text-2xl font-black text-text-main dark:text-white">Need a live demonstration?</h2>
+        <p class="text-text-muted max-w-xl mx-auto">Schedule a personalized 1-on-1 walkthrough with our support experts
+            to optimize your workflow.</p>
+        <button
+            class="px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl font-black shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto">
+            <span class="material-symbols-outlined">calendar_today</span>
+            Book a Demo
+        </button>
+    </div>
+</div>
+{% endblock %}

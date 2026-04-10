@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Orders - PharmaOne{% endblock %}
+
+{% block page_title %}Purchase Orders{% endblock %}
+
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Purchase Orders</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage and track all supplier orders and stock
+            replenishments.</p>
+    </div>
+    <button
+        class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg transition-all shadow-sm shadow-primary/30"
+        onclick="window.location.href='{{ url_for('create_order') }}';">
+        <span class="material-symbols-outlined text-xl">add</span>
+        Create New Order
+    </button>
+</div>
+
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
+    <div class="p-4 flex flex-wrap items-center gap-4">
+        <div class="relative flex-1 min-w-[240px]">
+            <form action="{{ url_for('search') }}" method="GET">
+                <span
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-xl">search</span>
+                <input name="q" value="{{ search_query or '' }}"
+                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400"
+                    placeholder="Search by Order ID or Supplier Name" type="text" />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div
+    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                    <th
+                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Order ID</th>
+                    <th
+                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Supplier Name</th>
+                    <th
+                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Order Date</th>
+                    <th
+                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">
+                        Total Value</th>
+                    <th
+                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Status</th>
+                    <th
+                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">
+                        Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                {% for purchase in purchases %}
+                <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="py-4 px-6 text-sm font-medium">
+                        <a href="{{ url_for('order_summary', order_id=purchase.id) }}"
+                            class="text-primary hover:underline">
+                            PO-{{ "%04d"|format(purchase.id) }}
+                        </a>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300">
+                                {{ purchase.supplier.name[:1]|upper }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-medium text-slate-900 dark:text-white">{{
+                                    purchase.supplier.name }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">{{ purchase.date.strftime('%d
+                        %b %Y') }}</td>
+                    <td class="py-4 px-6 text-sm font-semibold text-slate-900 dark:text-white text-right">{{
+                        settings.currency_symbol }}{{ "%.2f"|format(purchase.total_cost) }}</td>
+                    <td class="py-4 px-6">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                            <span class="size-1.5 rounded-full bg-green-500"></span>
+                            Received
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ url_for('order_summary', order_id=purchase.id) }}"
+                                class="p-1 text-slate-400 hover:text-primary transition-colors" title="View Summary">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </a>
+                            <a href="{{ url_for('delete_order', id=purchase.id) }}"
+                                onclick="return confirm('Are you sure you want to delete/void this purchase order? This will subtract stock from the medicines.')"
+                                class="p-1 text-slate-400 hover:text-red-500 transition-colors" title="Delete Order">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-text-secondary italic">No purchase orders found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div
+        class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/20">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest text-center sm:text-left">
+            Showing {{ (pagination.page - 1) * pagination.per_page + 1 if pagination.total > 0 else 0 }} to
+            {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else
+                pagination.total }} of {{ pagination.total }} orders </span>
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-full">
+                    {% if pagination.has_prev %}
+                    <a href="{{ url_for('purchase', page=pagination.prev_num) }}"
+                        class="size-9 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-sm">chevron_left</span>
+                    </a>
+                    {% endif %}
+
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+                    %}
+                    {% if page_num %}
+                    {% if page_num == pagination.page %}
+                    <span
+                        class="size-9 flex items-center justify-center bg-primary text-white rounded-xl text-xs font-black shadow-lg shadow-primary/25">{{
+                        page_num }}</span>
+                    {% else %}
+                    <a href="{{ url_for('purchase', page=page_num) }}"
+                        class="size-9 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 font-bold text-xs hover:border-primary transition-all">{{
+                        page_num }}</a>
+                    {% endif %}
+                    {% else %}
+                    <span class="text-slate-300 dark:text-slate-600 px-1 font-black">...</span>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <a href="{{ url_for('purchase', page=pagination.next_num) }}"
+                        class="size-9 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    </a>
+                    {% endif %}
+                </div>
+    </div>
+</div>
+{% endblock %}

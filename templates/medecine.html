@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}PharmaOne - Medicine List{% endblock %}
+
+{% block page_title %}Medicine Inventory{% endblock %}
+
+{% block content %}
+<div class="max-w-[1200px] mx-auto flex flex-col gap-6">
+  <!-- Page Header & Main Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-text-main dark:text-white tracking-tight">Medicine List</h2>
+      <p class="text-text-secondary text-sm mt-1">Manage stock, prices, and expiry dates of all medicines.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="{{ url_for('export_inventory') }}"
+        class="flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-5 py-2.5 rounded-lg shadow-sm hover:bg-slate-50 transition-all font-medium text-sm">
+        <span class="material-symbols-outlined text-[20px]">download</span>
+        CSV
+      </a>
+      <a href="{{ url_for('export_medicine_pdf') }}"
+        class="flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-5 py-2.5 rounded-lg shadow-sm hover:bg-slate-50 transition-all font-medium text-sm">
+        <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+        PDF
+      </a>
+      <a href="{{ url_for('add_medicine') }}"
+        class="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-sm hover:shadow transition-all font-medium text-sm">
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Add Medicine
+      </a>
+    </div>
+  </div>
+
+  <!-- Filters & Table Controls -->
+  <div
+    class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-[#e7edf3] dark:border-gray-800 shadow-sm">
+    <div class="flex flex-wrap gap-2 items-center">
+      <!-- Category Dropdown -->
+      <div class="relative inline-block text-left" id="categoryDropdown">
+        <button type="button" onclick="toggleDropdown('categoryMenu')"
+          class="flex items-center gap-2 px-4 py-2 bg-[#e7edf3] dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-main dark:text-gray-200 rounded-lg text-sm font-medium transition-all whitespace-nowrap">
+          <span class="material-symbols-outlined text-[18px]">category</span>
+          {{ current_category.name if current_category else 'All Types' }}
+          <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+        </button>
+        <div id="categoryMenu"
+          class="hidden absolute left-0 mt-2 w-56 origin-top-left rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 z-50 py-2">
+          <a href="{{ url_for('medicine', filter=current_filter) }}"
+            class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 {% if not current_category %}font-bold text-primary bg-blue-50/50 dark:bg-blue-900/20{% endif %}">
+            All Types
+          </a>
+          <div class="h-px bg-slate-100 dark:bg-slate-700 my-1 mx-2"></div>
+          {% for cat in categories %}
+          <a href="{{ url_for('medicine', category_id=cat.id, filter=current_filter) }}"
+            class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 {% if current_category and current_category.id == cat.id %}font-bold text-primary bg-blue-50/50 dark:bg-blue-900/20{% endif %}">
+            {{ cat.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Expiring Soon Filter -->
+      <a href="{{ url_for('medicine', category_id=request.args.get('category_id'), filter='expiring' if current_filter != 'expiring' else None) }}"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap border {% if current_filter == 'expiring' %}bg-red-500 text-white border-transparent shadow-md shadow-red-200 dark:shadow-none{% else %}bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 border-red-100 dark:border-red-900/30{% endif %}">
+        <span class="material-symbols-outlined text-[18px]">event_busy</span>
+        Expiring Soon
+      </a>
+
+      <!-- Reset Filter Button -->
+      {% if current_category or current_filter %}
+      <a href="{{ url_for('medicine') }}"
+        class="flex items-center gap-1 text-xs text-text-secondary hover:text-primary transition-colors px-2">
+        <span class="material-symbols-outlined text-sm">restart_alt</span>
+        Clear
+      </a>
+      {% endif %}
+    </div>
+    <div class="relative w-full lg:w-72">
+      <form action="{{ url_for('search') }}" method="GET">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-text-secondary text-[20px]">search</span>
+        </div>
+        <input name="q" value="{{ search_query or '' }}"
+          class="block w-full pl-10 pr-4 py-2 border border-[#e7edf3] dark:border-gray-700 rounded-lg text-sm bg-background-light dark:bg-gray-800 text-text-main dark:text-white placeholder-text-secondary focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none"
+          placeholder="Search in list..." type="text" />
+      </form>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div
+    class="bg-surface-light dark:bg-surface-dark border border-[#e7edf3] dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[900px]">
+        <thead class="bg-background-light dark:bg-gray-800 border-b border-[#e7edf3] dark:border-gray-700">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Medicine
+              Name</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Category
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Stock
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Price
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Expiry
+              Date</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Status
+            </th>
+            <th class="px-6 py-4 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">Action
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#e7edf3] dark:divide-gray-800">
+          {% for med in medicines %}
+          <tr class="hover:bg-background-light dark:hover:bg-gray-800/50 transition-colors group">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="size-8 rounded-md bg-blue-100 dark:bg-blue-900/30 text-primary flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                  onclick="openMSDSModal({{ med.id }})">
+                  <span class="material-symbols-outlined text-[18px]">pill</span>
+                </div>
+                <div class="flex flex-col">
+                  <span
+                    class="text-sm font-medium text-text-main dark:text-white cursor-pointer hover:text-primary transition-colors"
+                    onclick="openMSDSModal({{ med.id }})">{{ med.name }}</span>
+                  <span class="text-xs text-text-secondary">{{ med.generic_name }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-text-secondary">{{ med.category.name if med.category else 'General' }}
+            </td>
+            <td class="px-6 py-4 text-sm text-text-secondary">{{ med.stock_quantity }}</td>
+            <td class="px-6 py-4 text-sm font-medium text-text-main dark:text-white">{{ settings.currency_symbol }}{{
+              "%.2f"|format(med.selling_price) }}
+            </td>
+            <td
+              class="px-6 py-4 text-sm {% if med.is_expired %}text-red-600 font-bold{% elif med.is_near_expiry %}text-orange-500 font-medium{% else %}text-text-secondary{% endif %}">
+              {{ med.expiry_date.strftime('%d %b %Y') }}
+            </td>
+            <td class="px-6 py-4 text-sm">
+              {% if med.is_expired %}
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Expired</span>
+              {% elif med.is_near_expiry %}
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Near
+                Expiry</span>
+              {% elif med.stock_quantity <= med.low_stock_threshold %} <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                Low Stock</span>
+                {% else %}
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Healthy</span>
+                {% endif %}
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button onclick="openMSDSModal({{ med.id }})"
+                  class="p-1 text-text-secondary hover:text-primary transition-colors" title="View Details">
+                  <span class="material-symbols-outlined text-[20px]">visibility</span>
+                </button>
+                <a href="{{ url_for('edit_medicine', id=med.id) }}"
+                  class="p-1 text-text-secondary hover:text-primary transition-colors" title="Edit">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </a>
+                <a href="{{ url_for('delete_medicine', id=med.id) }}"
+                  onclick="return confirm('Are you sure you want to delete this medicine?')"
+                  class="p-1 text-text-secondary hover:text-red-500 transition-colors" title="Delete">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="px-6 py-8 text-center text-text-secondary italic">No medicines found. Use "Add
+              Medicine" to create one.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 dark:border-slate-800">
+      <div class="text-sm text-slate-500 dark:text-slate-400">
+        Showing <span class="font-medium text-slate-900 dark:text-white">{{ (pagination.page - 1) * pagination.per_page
+          + 1 if pagination.total > 0 else 0 }}</span>
+        to <span class="font-medium text-slate-900 dark:text-white">{{ pagination.page * pagination.per_page if
+          pagination.page * pagination.per_page < pagination.total else pagination.total }}</span>
+            of <span class="font-medium text-slate-900 dark:text-white">{{ pagination.total }}</span> results
+      </div>
+
+      <div class="flex items-center gap-2">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('medicine', page=pagination.prev_num, category_id=request.args.get('category_id'), filter=current_filter) }}"
+          class="size-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+          <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+        </a>
+        {% else %}
+        <div
+          class="size-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-300 dark:text-slate-700 cursor-not-allowed">
+          <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+        </div>
+        {% endif %}
+
+        <div class="flex items-center gap-1.5">
+          {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+          {% if page_num %}
+          {% if page_num == pagination.page %}
+          <span
+            class="size-9 rounded-xl bg-primary text-white flex items-center justify-center text-sm font-bold shadow-sm shadow-primary/30">{{
+            page_num }}</span>
+          {% else %}
+          <a href="{{ url_for('medicine', page=page_num, category_id=request.args.get('category_id'), filter=current_filter) }}"
+            class="size-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+            {{ page_num }}
+          </a>
+          {% endif %}
+          {% else %}
+          <span class="text-slate-400 px-1 font-bold">...</span>
+          {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('medicine', page=pagination.next_num, category_id=request.args.get('category_id'), filter=current_filter) }}"
+          class="size-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </a>
+        {% else %}
+        <div
+          class="size-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-300 dark:text-slate-700 cursor-not-allowed">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MSDS Modal -->
+<div id="msdsModal" class="fixed inset-0 z-[60] hidden overflow-y-auto">
+  <div class="flex min-h-screen items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeMSDSModal()"></div>
+
+    <!-- Modal Content -->
+    <div
+      class="relative w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-2xl transition-all border border-slate-200 dark:border-slate-800">
+      <!-- Modal Header -->
+      <div class="relative h-48 bg-gradient-to-br from-blue-600 to-indigo-700 p-8 flex items-end">
+        <div class="absolute top-4 right-4 text-white/80 hover:text-white cursor-pointer" onclick="closeMSDSModal()">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </div>
+        <div class="flex items-center gap-6">
+          <div
+            class="w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-5xl text-white">pill</span>
+          </div>
+          <div>
+            <h3 id="msds-name" class="text-3xl font-bold text-white tracking-tight">Medicine Name</h3>
+            <p id="msds-generic" class="text-blue-100 text-lg">Generic Name</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Category</span>
+            <p id="msds-category" class="mt-1 text-sm font-medium text-slate-900 dark:text-white">Loading...</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">SKU/Batch</span>
+            <p id="msds-sku" class="mt-1 text-sm font-medium text-slate-900 dark:text-white">Loading...</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Inventory</span>
+            <p id="msds-stock" class="mt-1 text-sm font-medium text-slate-900 dark:text-white">Loading...</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Expiry</span>
+            <p id="msds-expiry" class="mt-1 text-sm font-medium text-slate-900 dark:text-white">Loading...</p>
+          </div>
+        </div>
+
+        <!-- MSDS Document Sections -->
+        <div class="space-y-6">
+          <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+            <span class="material-symbols-outlined text-primary">security</span>
+            <h4 class="text-lg font-bold text-slate-900 dark:text-white">Safe Handling & Safety Data</h4>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h5 class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Material Identification
+              </h5>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                This material is recognized as a pharmaceutical product intended for medical use as prescribed.
+                Identification is verified through SKU and batch tracking.
+              </p>
+            </div>
+            <div class="space-y-4">
+              <h5 class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                Hazard Statements
+              </h5>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Store in a cool, dry place. Keep out of reach of children. Consult clinical safety guidelines for
+                allergic reaction protocols and contraindications.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30">
+            <h5 class="text-sm font-bold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">info</span>
+              MSDS / Clinical Information
+            </h5>
+            <div id="msds-info" class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed whitespace-pre-wrap">
+              Loading specific MSDS safety information...
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="p-4 border border-slate-100 dark:border-slate-800 rounded-xl">
+              <h6 class="text-xs font-bold text-slate-500 uppercase mb-2">Supplier</h6>
+              <p id="msds-supplier" class="text-sm text-slate-900 dark:text-white font-medium">Loading...</p>
+            </div>
+            <div class="p-4 border border-slate-100 dark:border-slate-800 rounded-xl">
+              <h6 class="text-xs font-bold text-slate-500 uppercase mb-2">Price (Selling)</h6>
+              <p id="msds-price" class="text-sm text-slate-900 dark:text-white font-medium">Loading...</p>
+            </div>
+            <div class="p-4 border border-slate-100 dark:border-slate-800 rounded-xl">
+              <h6 class="text-xs font-bold text-slate-500 uppercase mb-2">Status</h6>
+              <div id="msds-status">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 bg-slate-50 dark:bg-slate-900/50">
+        <button onclick="closeMSDSModal()"
+          class="px-6 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all font-semibold text-sm">
+          Close Window
+        </button>
+        <button id="edit-button"
+          class="px-6 py-2.5 rounded-xl bg-primary text-white hover:bg-blue-700 transition-all font-semibold text-sm flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">edit</span>
+          Edit Product
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  function openMSDSModal(id) {
+    const modal = document.getElementById('msdsModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    fetch(`/medicine/details/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('msds-name').textContent = data.name;
+        document.getElementById('msds-generic').textContent = data.generic_name;
+        document.getElementById('msds-category').textContent = data.category;
+        document.getElementById('msds-sku').textContent = data.sku;
+        document.getElementById('msds-stock').textContent = `${data.stock} Units`;
+        document.getElementById('msds-expiry').textContent = data.expiry_date;
+        document.getElementById('msds-info').textContent = data.msds_info;
+        document.getElementById('msds-supplier').textContent = data.supplier;
+        document.getElementById('msds-price').textContent = `{{ settings.currency_symbol }}${data.selling_price.toFixed(2)}`;
+
+        const statusDiv = document.getElementById('msds-status');
+        if (data.is_expired) {
+          statusDiv.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Critical: Expired</span>';
+        } else if (data.is_near_expiry) {
+          statusDiv.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Warning: Near Expiry</span>';
+        } else {
+          statusDiv.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Healthy Stock</span>';
+        }
+
+        document.getElementById('edit-button').onclick = () => {
+          window.location.href = `/edit_medicine/${id}`;
+        };
+      })
+      .catch(error => {
+        console.error('Error fetching medicine details:', error);
+        alert('Failed to load medicine details.');
+        closeMSDSModal();
+      });
+  }
+
+  function closeMSDSModal() {
+    const modal = document.getElementById('msdsModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Dropdown Toggle Control
+  function toggleDropdown(id) {
+    const menu = document.getElementById(id);
+    const isHidden = menu.classList.contains('hidden');
+
+    // Close other dropdowns
+    document.querySelectorAll('[id$="Menu"]').forEach(m => m.classList.add('hidden'));
+
+    if (isHidden) {
+      menu.classList.remove('hidden');
+    }
+
+    // Single listener for clicking outside
+    const closeHandler = (e) => {
+      if (!e.target.closest('#categoryDropdown')) {
+        menu.classList.add('hidden');
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+
+    // Delay adding the listener to avoid the current click triggering it immediately
+    setTimeout(() => {
+      if (!menu.classList.contains('hidden')) {
+        document.addEventListener('click', closeHandler);
+      }
+    }, 10);
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMSDSModal();
+  });
+</script>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+  }
+</style>
+{% endblock %}

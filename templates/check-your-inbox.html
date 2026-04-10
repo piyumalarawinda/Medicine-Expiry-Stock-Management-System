@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Reset Link Sent - PharmaStock</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-[#0d141b] dark:text-white antialiased">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101922] px-10 py-4">
+            <div class="flex items-center gap-3">
+                <div class="size-8 text-primary">
+                    <svg class="w-full h-full" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd"
+                            d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z"
+                            fill="currentColor" fill-rule="evenodd"></path>
+                        <path clip-rule="evenodd"
+                            d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"
+                            fill="currentColor" fill-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">PharmaStock
+                </h2>
+            </div>
+        </header>
+        <main class="layout-container flex grow flex-col items-center justify-center py-10 px-4 sm:px-10">
+            <div class="w-full max-w-md">
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div class="flex flex-col items-center px-8 py-10 gap-6">
+                        <div
+                            class="size-20 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-2 animate-fade-in">
+                            <span class="material-symbols-outlined text-primary text-[40px]">mark_email_read</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-3 text-center">
+                            <h1 class="text-slate-900 dark:text-white text-2xl font-bold leading-tight tracking-tight">
+                                Check your inbox
+                            </h1>
+                            <p
+                                class="text-slate-600 dark:text-slate-300 text-sm font-normal leading-relaxed max-w-[360px]">
+                                We have sent a password reset link to <strong
+                                    class="text-slate-900 dark:text-white">user@pharmacy.com</strong>.
+                            </p>
+                            <p
+                                class="text-slate-500 dark:text-slate-400 text-xs font-normal leading-normal max-w-[360px]">
+                                Use the link in the email to restore access to your account. If you don't see it, please
+                                check your spam folder.
+                            </p>
+                        </div>
+                        <button
+                            class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-4 bg-primary hover:bg-blue-600 text-white text-sm font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm"
+                            onclick="window.location.href='login.html'">
+                            <span class="truncate">Back to Login</span>
+                        </button>
+                    </div>
+                    <div
+                        class="bg-slate-50 dark:bg-slate-900/50 px-8 py-4 border-t border-slate-100 dark:border-slate-700 flex justify-center">
+                        <div class="text-slate-600 dark:text-slate-400 text-sm font-normal text-center">
+                            Didn't receive the email?
+                            <a class="text-primary hover:text-blue-600 font-medium underline decoration-primary/30 underline-offset-4 hover:decoration-primary"
+                                href="#">Click here to resend</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="flex flex-col items-center gap-6 px-5 py-8 text-center w-full">
+            <div class="flex gap-6">
+                <a class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                    href="#">
+                    <span class="sr-only">Facebook</span>
+                    <span class="material-symbols-outlined text-xl">public</span>
+                </a>
+                <a class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                    href="#">
+                    <span class="sr-only">Twitter</span>
+                    <span class="material-symbols-outlined text-xl">alternate_email</span>
+                </a>
+            </div>
+            <p class="text-slate-400 dark:text-slate-500 text-sm font-normal leading-normal">© 2024 PharmaStock Inc. All
+                rights reserved.</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>

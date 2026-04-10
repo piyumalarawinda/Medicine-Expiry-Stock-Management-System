@@ -1,0 +1,15 @@
+ID,Name,Category,Stock,Unit Price,Expiry Date
+1,Amoxicillin 500mg,Antibiotics,27,$15.50,2026-06-09
+2,Paracetamol 500mg,Painkillers,48,$5.25,2026-05-09
+3,Vitamin C 1000mg,Vitamins,162,$12.00,2026-01-23
+4,Atorvastatin 20mg,Cardiology,148,$25.40,2026-07-29
+5,Lisinopril 10mg,Cardiology,58,$18.90,2026-08-01
+6,Metformin 850mg,Diabetes,97,$10.15,2027-01-21
+7,Hydrocortisone Cream,Dermatology,32,$8.75,2026-06-30
+8,Ibuprofen 400mg,Painkillers,97,$7.50,2026-02-22
+9,Multivitamin Complex,Vitamins,129,$22.30,2026-11-26
+10,Azithromycin 250mg,Antibiotics,72,$30.00,2026-07-26
+11,Paracetamol 650mg,Analgesic,5,$0.00,2026-02-12
+12,Benadryl Syrup,Antihistamine,50,$0.00,2026-01-23
+13,Insulin Glargine,Antidiabetic,12,$0.00,2026-03-14
+14,zim,Cardiovascular,953,$0.00,2026-01-30

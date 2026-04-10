@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - {{ user.username }}{% endblock %}
+
+{% block header_title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+    <div
+        class="bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+        <div
+            class="p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="size-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-2xl">manage_accounts</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900 dark:text-white">Edit User Profile</h2>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">{{ user.username }}</p>
+                </div>
+            </div>
+            <a href="{{ url_for('user_management') }}"
+                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 transition-all">
+                <span class="material-symbols-outlined">close</span>
+            </a>
+        </div>
+
+        <form action="{{ url_for('edit_user', id=user.id) }}" method="POST" class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Username -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Username</label>
+                    <div class="relative group">
+                        <span
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">account_circle</span>
+                        <input type="text" name="username" value="{{ user.username }}" required
+                            class="w-full h-14 pl-12 pr-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-semibold dark:text-white">
+                    </div>
+                </div>
+
+                <!-- Password (Optional) -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1">New Password
+                        (Optional)</label>
+                    <div class="relative group">
+                        <span
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">lock</span>
+                        <input type="password" name="password"
+                            class="w-full h-14 pl-12 pr-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-semibold dark:text-white"
+                            placeholder="Leave blank to keep current">
+                    </div>
+                </div>
+
+                <!-- First Name -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1">First
+                        Name</label>
+                    <input type="text" name="first_name" value="{{ user.first_name or '' }}"
+                        class="w-full h-14 px-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-semibold dark:text-white">
+                </div>
+
+                <!-- Last Name -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Last Name</label>
+                    <input type="text" name="last_name" value="{{ user.last_name or '' }}"
+                        class="w-full h-14 px-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-semibold dark:text-white">
+                </div>
+
+                <!-- Email -->
+                <div class="space-y-2 md:col-span-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Email
+                        Address</label>
+                    <div class="relative group">
+                        <span
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">mail</span>
+                        <input type="email" name="email" value="{{ user.email or '' }}"
+                            class="w-full h-14 pl-12 pr-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-semibold dark:text-white">
+                    </div>
+                </div>
+
+                <!-- Role -->
+                <div class="space-y-2 md:col-span-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Access
+                        Role</label>
+                    <select name="role" required
+                        class="w-full h-14 px-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-bold dark:text-white appearance-none">
+                        <option value="Staff" {% if user.role=='Staff' %}selected{% endif %}>Staff (Restricted Access)
+                        </option>
+                        <option value="admin" {% if user.role=='admin' %}selected{% endif %}>Administrator (Full Access)
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-6 flex gap-4">
+                <a href="{{ url_for('user_management') }}"
+                    class="flex-1 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all uppercase tracking-widest text-xs">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="flex-[2] h-14 bg-primary hover:bg-primary-dark text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-xs">
+                    <span class="material-symbols-outlined text-xl">save</span>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
